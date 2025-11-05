@@ -1,17 +1,11 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const z = require("zod");
 const db = require("../db/config");
-const app = express();
 const router = express.Router();
 
-// create application/json parser
-const jsonParser = bodyParser.json();
-
-// create application/x-www-form-urlencoded parser
-const urlencodedParser = bodyParser.urlencoded();
 
 // ================user login api===========================
+
 router.post("/user/login", async (req, res) => {
   const loginData = req.body;
 
@@ -54,7 +48,7 @@ const userSchema = z.object({
   city: z.string().min(2),
 });
 
-router.post("/user/register", urlencodedParser, async (req, res) => {
+router.post("/user/register", async (req, res) => {
   try {
     const registerData = req.body;
     const validateRegister = userSchema.parse(registerData);
@@ -98,6 +92,7 @@ router.post("/user/register", urlencodedParser, async (req, res) => {
 });
 
 // ========================user get full info api==========================
+
 router.get("/user/:id", async (req, res) => {
   const paramID = req.params.id;
 
@@ -116,6 +111,7 @@ router.get("/user/:id", async (req, res) => {
 });
 
 // ======================user update account info api===========================
+
 router.put("/user/update/:id", async (req, res) => {
   const paramID = req.params.id;
   const updatingData = req.body;
@@ -160,6 +156,7 @@ router.put("/user/update/:id", async (req, res) => {
 });
 
 // ================user delete account api =============================
+
 router.delete("/user/delete/:id", async (req, res) => {
   const paramID = req.params.id;
 
