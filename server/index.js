@@ -1,6 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const router = require('./router/carRoute');
+const vehicle = require('./router/vehicle');
 const login = require('./router/login');
 const bodyParser = require('body-parser');
 
@@ -11,8 +11,8 @@ app.use(bodyParser.urlencoded())
 app.use(express.json())
 const port = 4000
 
-app.use('/api', router)
 app.use('/api', login)
+app.use('/api', vehicle)
 
 app.listen(port , (req , res )=>{
     console.log(`backend is running on port ${port}`)
