@@ -1,7 +1,7 @@
 // db.js
 const mysql = require('mysql2');
 
-require('dotenv').config(); // Use environment variables for production!
+require('dotenv').config();
 
 // Create a connection pool instead of a single connection
 const pool = mysql.createPool({
