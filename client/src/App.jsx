@@ -37,11 +37,10 @@ import DigitalID from "./Pages/DigitalID";
 import TermAndCondition from "./components/default/TermAndCondition";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
-import ManageDrivers from "./Pages/superAdmin/manageDrivers";
+import ManageDrivers from "./Pages/superAdmin/ManageDrivers";
 import UpdateDriver from "./Pages/superAdmin/UpdateDriver";
 import Users from "./Pages/admin/Users";
 import UserDetail from "./Pages/admin/UserDetail";
-
 
 function App() {
   return (
@@ -76,22 +75,24 @@ function App() {
             <Route path="/verifyid/:id" element={<DigitalID />} />
           </Route>
 
-
-
           {/* Admin and Super admin Auth Layout */}
           <Route element={<AuthAdminLayout />}>
             <Route path="/admin/login" element={<LoginForm />} />
           </Route>
 
-
           {/* admin Main layout */}
           <Route element={<AdminLayout />}>
-
             <Route path="/admin" element={<AdminVehicle />} />
             <Route path="/admin/add" element={<AddVehicle />} />
-            <Route path="/admin/update/:vname/:vid" element={<UpdateVehicle />} />
+            <Route
+              path="/admin/update/:vname/:vid"
+              element={<UpdateVehicle />}
+            />
             <Route path="/admin/pending" element={<PendingReserve />} />
-            <Route path="/admin/confirmed" element={<ConfirmedReservations />} />
+            <Route
+              path="/admin/confirmed"
+              element={<ConfirmedReservations />}
+            />
             <Route path="/admin/users" element={<Users />} />
             <Route path="/admin/user/:id" element={<UserDetail />} />
           </Route>
@@ -99,14 +100,28 @@ function App() {
           {/* super admin Main layout */}
 
           <Route element={<SuperAdminLayout />}>
-            <Route path="/superadmin/manage-admins" element={<ManageAdmins />} />
-            <Route path="/superadmin/manage-drivers" element={<ManageDrivers />} />
+            <Route
+              path="/superadmin/manage-admins"
+              element={<ManageAdmins />}
+            />
+            <Route
+              path="/superadmin/manage-drivers"
+              element={<ManageDrivers />}
+            />
             <Route path="/superadmin/add-admin" element={<AddAdmin />} />
-            <Route path="/superadmin/update-admin/:id" element={<UpdateAdmin />} />
-            <Route path="/superadmin/update-driver/:id" element={<UpdateDriver />} />
+            <Route
+              path="/superadmin/update-admin/:id"
+              element={<UpdateAdmin />}
+            />
+            <Route
+              path="/superadmin/update-driver/:id"
+              element={<UpdateDriver />}
+            />
             <Route path="/superadmin/add-driver" element={<AddDriver />} />
-            <Route path="superadmin/analytics" element={<AnalysisDashboard />} />
-
+            <Route
+              path="superadmin/analytics"
+              element={<AnalysisDashboard />}
+            />
           </Route>
           <Route path="/terms-and-conditions" element={<TermAndCondition />} />
           <Route path="*" element={<Errorpage />} />
