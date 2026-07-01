@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function LoginForm() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
-    password: ""
+    password: "",
   });
-  const [error, setError] = useState(null)
+  const [error, setError] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -20,7 +20,7 @@ function LoginForm() {
             headers: {
               "jwt-token": token,
             },
-          }
+          },
         );
 
         if (!responseVerify.ok) {
@@ -29,12 +29,10 @@ function LoginForm() {
 
         const result = await responseVerify.json();
         navigate(`/admin/${result.id}`);
-      } catch (e) {
-
-      }
+      } catch (e) {}
     };
     fetchData();
-  }, [])
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,12 +42,13 @@ function LoginForm() {
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify(formData)
-      })
+        body: JSON.stringify(formData),
+      });
       if (!response.ok) {
-        setError("Invalid username or password.")
+        setError("Invalid username or password.");
       }
 
+      console.log("Login response = ", response);
       const data = await response.json();
 
       // if (!data.success) {
@@ -59,22 +58,18 @@ function LoginForm() {
 
       localStorage.setItem("jwt-token", data.token);
       // localStorage.setItem("user", JSON.stringify(data.user));
-
       if (data.user.type === "superadmin") {
         navigate("/superadmin/manage-admins");
       } else if (data.user.type === "admin") {
         navigate("/admin");
       }
     } catch (e) {
-      throw new Error(e)
+      throw new Error(e);
     }
-
   };
-
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-
       {/* Left Side: Illustration / Welcome */}
       <div className="hidden md:flex flex-1 bg-orange-500 items-center justify-center p-10 rounded-l-3xl">
         <div className="text-white max-w-md">
@@ -178,8 +173,6 @@ function LoginForm() {
       </div>
     </div>
   );
-
-
 }
 
 export default LoginForm;

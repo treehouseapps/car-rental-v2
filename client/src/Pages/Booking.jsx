@@ -12,7 +12,7 @@ const CarDetailPage = () => {
   const [userData, setUserData] = useState();
   const navigate = useNavigate();
   const [selected, setSelected] = useState();
-  const [driver, setDriver] = useState()
+  const [driver, setDriver] = useState();
   const [error, setError] = useState();
   const [index, setIndex] = useState(0);
   const [imageCount, setImageCount] = useState();
@@ -21,13 +21,12 @@ const CarDetailPage = () => {
   const [tax, setTax] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [driverPrice, setDriverPrice] = useState(0);
-  const [pickUpDate ,  setPickupDate] = useState()
-  const [showDriverLicense, setShowDriverLicense] = useState(true)
+  const [pickUpDate, setPickupDate] = useState();
+  const [showDriverLicense, setShowDriverLicense] = useState(true);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [driverLicensePhoto,setDriverLicensePhoto ] = useState("null")
+  const [driverLicensePhoto, setDriverLicensePhoto] = useState(null);
   const year = new Date().getFullYear();
   const month = new Date().getMonth();
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,7 +37,7 @@ const CarDetailPage = () => {
           {
             method: "POST",
             headers: { "jwt-token": token },
-          }
+          },
         );
 
         if (!responseVerify.ok) {
@@ -57,27 +56,26 @@ const CarDetailPage = () => {
           throw new Error(errorData.message || "Something went wrong");
         }
 
-
-
         const result = await response.json();
         // console.log(result)
-        if(result[0].status == "onHold"){
-          const pickDate = new Date(result[0].Pickup_Date)
-          setPickupDate(pickDate.setDate(pickDate.getDate()- 7))
+        if (result[0].status == "onHold") {
+          const pickDate = new Date(result[0].Pickup_Date);
+          setPickupDate(pickDate.setDate(pickDate.getDate() - 7));
         }
         result[0].image = JSON.parse(result[0].Images);
 
         setSelectedCar(result);
         setImageCount(result[0].image.length);
 
-
-        const driverResult = await fetch(`http://localhost:3000/api/driver/active`)
+        const driverResult = await fetch(
+          `http://localhost:3000/api/driver/active`,
+        );
         if (!driverResult.ok) {
-          console.log("there is no driver available right now.")
-          return
+          console.log("there is no driver available right now.");
+          return;
         }
 
-        setDriver(await driverResult.json())
+        setDriver(await driverResult.json());
       } catch (e) {
         console.error(e);
       }
@@ -105,35 +103,35 @@ const CarDetailPage = () => {
       setError("Please accept the Terms & Conditions before confirming.");
       return;
     }
-    try {
-
-      const formData = new FormData();
-    formData.append("pickUpDate", rentalDetails.pickUpDate);
-    formData.append("returnDate", rentalDetails.returnDate);
-    formData.append("rentDay", rentalDetails.rentDay);
-    formData.append("vehicleDriver", rentalDetails.vehicleDriver);
-    formData.append("Payment", pay);
-    formData.append("tax", tax);
-    formData.append("TotalPayment", totalPrice);
-    if (driverLicensePhoto) {
-      formData.append("driverLicensePhoto", driverLicensePhoto);
+    if (showDriverLicense && !driverLicensePhoto) {
+      setError("Please upload your driver license photo before confirming.");
+      return;
     }
+    try {
+      const formData = new FormData();
+      formData.append("pickUpDate", rentalDetails.pickUpDate);
+      formData.append("returnDate", rentalDetails.returnDate);
+      formData.append("rentDay", rentalDetails.rentDay);
+      formData.append("vehicleDriver", rentalDetails.vehicleDriver);
+      formData.append("Payment", pay);
+      formData.append("tax", tax);
+      formData.append("TotalPayment", totalPrice);
 
+      if (driverLicensePhoto) {
+        formData.append("driverLicensePhoto", driverLicensePhoto);
+      }
       const response = await fetch(
         `http://localhost:3000/api/user/reservation/${userData.id}/${id}`,
         {
           method: "POST",
-          body: formData
-        }
+          body: formData,
+        },
       );
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData);
       }
-
       const result = await response.json();
-      // console.log(result);
       alert("Booking confirmed!. redirecting to home page.");
       setTimeout(() => {
         navigate(`/verifyid/${userData.id}`);
@@ -181,7 +179,7 @@ const CarDetailPage = () => {
     setTax(taxAmount);
     setTotalPrice(totalPayment);
 
-    // SEND TO BACKEND 
+    // SEND TO BACKEND
     setRentalDetails((prev) => ({
       ...prev,
       pickUpDate: range.from.toLocaleDateString("en-CA"),
@@ -190,10 +188,9 @@ const CarDetailPage = () => {
       Payment: subTotal,
       tax: taxAmount,
       TotalPayment: totalPayment,
-      vehicleDriver: prev.vehicleDriver
+      vehicleDriver: prev.vehicleDriver,
     }));
   };
-
 
   return selectedCar ? (
     <div className="container mx-auto p-6 mt-20">
@@ -239,7 +236,8 @@ const CarDetailPage = () => {
             {selectedCar[0].V_Name}
           </h2>
           <p className="text-xl text-gray-600 mb-4">
-            {selectedCar[0].Brand_Name} - {selectedCar[0].Price_Per_Day} Birr/day
+            {selectedCar[0].Brand_Name} - {selectedCar[0].Price_Per_Day}{" "}
+            Birr/day
           </p>
 
           {/* Car Features */}
@@ -271,7 +269,7 @@ const CarDetailPage = () => {
                   startMonth={new Date(year, month)}
                   timeZone="+03:00"
                   numerals="latn"
-                  disabled={{ before: new Date() , after : pickUpDate }}
+                  disabled={{ before: new Date(), after: pickUpDate }}
                 />
                 <p className="bg-green-400 w-fit px-2 rounded-md">Gregorian</p>
                 <USDayPicker
@@ -281,7 +279,7 @@ const CarDetailPage = () => {
                   startMonth={new Date(year, month)}
                   timeZone="+03:00"
                   numerals="latn"
-                  disabled={{ before: new Date(), after : pickUpDate}}
+                  disabled={{ before: new Date(), after: pickUpDate }}
                 />
               </div>
               {error && (
@@ -298,17 +296,23 @@ const CarDetailPage = () => {
                     <td className="p-3 text-xl">{dateDiff} day/s</td>
                   </tr>
                   <tr>
-                    <td className="p-3 text-green-900 font-semibold">Payment</td>
+                    <td className="p-3 text-green-900 font-semibold">
+                      Payment
+                    </td>
                     <td className="p-3 text-xl">{pay} Birr</td>
                   </tr>
                   {driverPrice > 0 && (
                     <tr>
-                      <td className="p-3 text-green-900 font-semibold">Driver(400 per/Day)</td>
+                      <td className="p-3 text-green-900 font-semibold">
+                        Driver(400 per/Day)
+                      </td>
                       <td className="p-3 text-xl">{driverPrice} Birr</td>
                     </tr>
                   )}
                   <tr>
-                    <td className="p-3 text-green-900 font-semibold">Tax (15%)</td>
+                    <td className="p-3 text-green-900 font-semibold">
+                      Tax (15%)
+                    </td>
                     <td className="p-3 text-xl">{tax} Birr</td>
                   </tr>
                   <tr>
@@ -345,9 +349,10 @@ const CarDetailPage = () => {
                     setDriverLicensePhoto(null);
                     setSelectedFile(null);
                     newDriverPrice = DRIVER_FEE_PER_DAY * dateDiff;
-                  
-                  }else{
-                  setShowDriverLicense(true)
+                  } else {
+                    setShowDriverLicense(true);
+                    setDriverLicensePhoto(null);
+                    setSelectedFile(null);
                   }
                   setDriverPrice(newDriverPrice);
 
@@ -359,7 +364,9 @@ const CarDetailPage = () => {
                   const baseRent = selectedCar[0].Price_Per_Day * dateDiff;
                   const subTotal = baseRent + newDriverPrice;
                   const taxAmount = parseFloat((subTotal * 0.15).toFixed(2));
-                  const totalPayment = parseFloat((subTotal + taxAmount).toFixed(2));
+                  const totalPayment = parseFloat(
+                    (subTotal + taxAmount).toFixed(2),
+                  );
 
                   setPay(subTotal);
                   setTax(taxAmount);
@@ -367,42 +374,41 @@ const CarDetailPage = () => {
                 }}
                 className="w-full border border-gray-300 rounded-lg px-4 py-2"
               >
-
                 <option value="NoDriver">No Driver</option>
                 {driver?.map((drivers) => (
-                  <option key={drivers.D_ID} value={drivers.D_ID}>{drivers.full_name}</option>
+                  <option key={drivers.D_ID} value={drivers.D_ID}>
+                    {drivers.full_name}
+                  </option>
                 ))}
               </select>
             </div>
-                {showDriverLicense &&  (
+            {showDriverLicense && (
+              <div className="flex flex-col mt-4 max-w-md mx-auto">
+                <label className="text-sm text-gray-600 mb-2 font-medium">
+                  Driver License
+                </label>
 
-            <div className="flex flex-col mt-4 max-w-md mx-auto">
-              <label className="text-sm text-gray-600 mb-2 font-medium">
-                Driver License
-              </label>
-
-              <input
-                type="file"
-                accept="image/*"
-                required
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  setDriverLicensePhoto(file)
-                  if (file) setSelectedFile(URL.createObjectURL(file));
-                }}
-                className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-
-              {selectedFile && (
-                <img
-                  src={selectedFile}
-                  alt="Driver License Preview"
-                  className="mt-4 w-full h-48 object-contain rounded-md"
+                <input
+                  type="file"
+                  accept="image/*"
+                  required
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    setDriverLicensePhoto(file);
+                    if (file) setSelectedFile(URL.createObjectURL(file));
+                  }}
+                  className="border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
-              )}
-            </div>
-                )}
 
+                {selectedFile && (
+                  <img
+                    src={selectedFile}
+                    alt="Driver License Preview"
+                    className="mt-4 w-full h-48 object-contain rounded-md"
+                  />
+                )}
+              </div>
+            )}
 
             <div className="mt-4 flex items-start gap-3">
               <input
@@ -424,9 +430,9 @@ const CarDetailPage = () => {
                 >
                   Terms &amp; Conditions
                 </a>
-              <p className="text-sm text-red-400">
-                Please pay within 2 hours.
-               </p>
+                <p className="text-sm text-red-400">
+                  Please pay within 2 hours.
+                </p>
               </label>
             </div>
 

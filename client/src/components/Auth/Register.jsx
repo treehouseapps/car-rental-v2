@@ -31,9 +31,7 @@ const Register = () => {
     nationality: "Ethiopian",
     city: "Addis Ababa",
   });
-const [confirmPassword, setConfirmPassword] = useState("");
-
-
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState({
     password: false,
@@ -42,102 +40,99 @@ const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
- useEffect(()=>{
-       const fetchData = async () => {
-        try {
-          const token = localStorage.getItem("jwt-token");
-  
-          const responseVerify = await fetch(
-            "http://localhost:3000/api/user/verify",
-            {
-              method: "POST",
-              headers: {
-                "jwt-token": token,
-              },
-            }
-          );
-  
-         if (!responseVerify.ok) {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("jwt-token");
+
+        const responseVerify = await fetch(
+          "http://localhost:3000/api/user/verify",
+          {
+            method: "POST",
+            headers: {
+              "jwt-token": token,
+            },
+          },
+        );
+
+        if (!responseVerify.ok) {
           return;
         }
         navigate(`/`);
-        } catch (e) {
-         
-        }
-      };
-      fetchData();
-    },[])
-
-    const validateField = (name, value, formData, confirmPassword) => {
-      switch (name) {
-        case "fullName":
-          if (value.length <= 3) return "Full name must be greater than 3 characters";
-          return null;
-
-        case "password":
-          if (value.length < 8) return "Password must be at least 8 characters";
-          if (confirmPassword && value !== confirmPassword)
-            return "Passwords do not match";
-          return null;
-
-        case "confirmPassword":
-          if (value !== formData.password) return "Passwords do not match";
-          return null;
-
-        case "phoneNumber":
-          if (!/^\d{10}$/.test(value))
-            return "Phone number must have 10 characters";
-          return null;
-
-        default:
-          return null;
-      }
+      } catch (e) {}
     };
+    fetchData();
+  }, []);
 
-   const handleChange = (e) => {
-      const { name, value } = e.target;
+  const validateField = (name, value, formData, confirmPassword) => {
+    switch (name) {
+      case "fullName":
+        if (value.length <= 3)
+          return "Full name must be greater than 3 characters";
+        return null;
 
-      if (name === "confirmPassword") {
-        setConfirmPassword(value);
+      case "password":
+        if (value.length < 8) return "Password must be at least 8 characters";
+        if (confirmPassword && value !== confirmPassword)
+          return "Passwords do not match";
+        return null;
 
-        const error = validateField(
-          name,
-          value,
-          { ...formData, [name]: value },
-          confirmPassword
-        );
+      case "confirmPassword":
+        if (value !== formData.password) return "Passwords do not match";
+        return null;
 
+      case "phoneNumber":
+        if (!/^\d{10}$/.test(value))
+          return "Phone number must have 10 characters";
+        return null;
 
-        setErrors(prev => ({
-          ...prev,
-          confirmPassword: error,
-          password:
-            value && value !== formData.password
-              ? "Passwords do not match"
-              : null,
-        }));
+      default:
+        return null;
+    }
+  };
 
-        return;
-      }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
-      setFormData(prev => ({
-        ...prev,
-        [name]: value,
-      }));
+    if (name === "confirmPassword") {
+      setConfirmPassword(value);
 
       const error = validateField(
         name,
         value,
         { ...formData, [name]: value },
-        confirmPassword
+        confirmPassword,
       );
 
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: error,
+        confirmPassword: error,
+        password:
+          value && value !== formData.password
+            ? "Passwords do not match"
+            : null,
       }));
-    };
 
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    const error = validateField(
+      name,
+      value,
+      { ...formData, [name]: value },
+      confirmPassword,
+    );
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -145,7 +140,7 @@ const [confirmPassword, setConfirmPassword] = useState("");
     if (hasErrors) return;
 
     if (formData.password !== confirmPassword) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
         confirmPassword: "Passwords do not match",
       }));
@@ -159,27 +154,29 @@ const [confirmPassword, setConfirmPassword] = useState("");
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();  
+      const data = await response.json();
 
-      if (!response.ok) {   
+      console.log(data);
+
+      if (!response.ok) {
         if (data.type === "zod") {
           const newErrors = {};
-          data.errors.forEach(err => {
+          data.errors.forEach((err) => {
             newErrors[err.field] = err.message;
           });
-          setErrors(prev => ({ ...prev, ...newErrors }));
+          setErrors((prev) => ({ ...prev, ...newErrors }));
           return;
         }
 
         if (data.type === "custom") {
-          setErrors(prev => ({ ...prev, email: data.message }));
+          setErrors((prev) => ({ ...prev, email: data.message }));
           return;
         }
 
         throw new Error(data.message || "Something went wrong");
       }
 
-      localStorage.setItem("jwt-token", data); 
+      localStorage.setItem("jwt-token", data);
       navigate("/");
     } catch (error) {
       console.log("Internal Error");
@@ -334,9 +331,7 @@ const [confirmPassword, setConfirmPassword] = useState("");
                 <input
                   type="text"
                   value={formData.fullName}
-                  onChange={(e) =>
-                    handleChange(e)
-                  }
+                  onChange={(e) => handleChange(e)}
                   autoComplete="off"
                   name="fullName"
                   required
@@ -347,17 +342,17 @@ const [confirmPassword, setConfirmPassword] = useState("");
                 <SquareUser className="w-5 h-5 text-gray-400 absolute left-4 top-3.5" />
               </div>
             </div>
-                
-                {/* ============name error================ */}
 
-             {errors.fullName && (
+            {/* ============name error================ */}
+
+            {errors.fullName && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="flex items-center gap-2 text-red-500 bg-red-50 p-3 rounded-lg"
               >
                 <AlertCircle className="w-5 h-5" />
-                 <p className="text-sm">{errors.fullName}</p>
+                <p className="text-sm">{errors.fullName}</p>
               </motion.div>
             )}
             {/* ==================Email=========================== */}
@@ -368,9 +363,7 @@ const [confirmPassword, setConfirmPassword] = useState("");
                 <input
                   type="email"
                   value={formData.email}
-                  onChange={(e) =>
-                    handleChange(e)
-                  }
+                  onChange={(e) => handleChange(e)}
                   name="email"
                   required
                   className="w-full px-4 py-3 pl-12 border rounded-lg focus:ring-2 focus:ring-green-500 
@@ -383,14 +376,14 @@ const [confirmPassword, setConfirmPassword] = useState("");
 
             {/* ============email already created error================ */}
 
-             {errors.email && (
+            {errors.email && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="flex items-center gap-2 text-red-500 bg-red-50 p-3 rounded-lg"
               >
                 <AlertCircle className="w-5 h-5" />
-               <p className="text-sm"> {errors.email} </p>
+                <p className="text-sm"> {errors.email} </p>
               </motion.div>
             )}
 
@@ -404,9 +397,7 @@ const [confirmPassword, setConfirmPassword] = useState("");
                 <input
                   type={showPassword.password ? "text" : "password"}
                   value={formData.password}
-                  onChange={(e) =>
-                    handleChange(e)
-                  }
+                  onChange={(e) => handleChange(e)}
                   name="password"
                   required
                   className="w-full px-4 py-3 pl-12 pr-12 border rounded-lg focus:ring-2 focus:ring-green-500 
@@ -479,7 +470,9 @@ const [confirmPassword, setConfirmPassword] = useState("");
                 className="flex items-center gap-2 text-red-500 bg-red-50 p-3 rounded-lg"
               >
                 <AlertCircle className="w-5 h-5" />
-                <p className="text-sm">{ errors.password || errors.confirmPassword}</p>
+                <p className="text-sm">
+                  {errors.password || errors.confirmPassword}
+                </p>
               </motion.div>
             )}
 
@@ -494,9 +487,7 @@ const [confirmPassword, setConfirmPassword] = useState("");
                   type="text"
                   inputMode="numeric"
                   value={formData.phoneNumber}
-                  onChange={(e) =>
-                    handleChange(e)
-                  }
+                  onChange={(e) => handleChange(e)}
                   name="phoneNumber"
                   required
                   className="w-full px-4 py-3 pl-12 border rounded-lg focus:ring-2 focus:ring-green-500 
@@ -530,9 +521,7 @@ const [confirmPassword, setConfirmPassword] = useState("");
                   max={"2007-11-12"}
                   min={"1955-11-12"}
                   value={formData.dateOfBirth}
-                  onChange={(e) =>
-                    handleChange(e)
-                  }
+                  onChange={(e) => handleChange(e)}
                   name="dateOfBirth"
                   required
                   className="w-full px-4 py-3 pl-12 border rounded-lg focus:ring-2 focus:ring-green-500 
@@ -553,9 +542,7 @@ const [confirmPassword, setConfirmPassword] = useState("");
                 <select
                   className="nationality w-full px-4 py-3 pl-12 border rounded-lg focus:ring-2 focus:ring-green-500 
                            focus:border-transparent transition-all"
-                  onChange={(e) =>
-                    handleChange(e)
-                  }
+                  onChange={(e) => handleChange(e)}
                   name="nationality"
                   required
                 >
@@ -563,7 +550,7 @@ const [confirmPassword, setConfirmPassword] = useState("");
                     Ethiopian
                   </option>
                 </select>
-              
+
                 <Globe className="w-5 h-5 text-gray-400 absolute left-4 top-3.5" />
               </div>
             </div>
@@ -576,9 +563,7 @@ const [confirmPassword, setConfirmPassword] = useState("");
                 <select
                   className="city w-full px-4 py-3 pl-12 border rounded-lg focus:ring-2 focus:ring-green-500 
                            focus:border-transparent transition-all"
-                  onChange={(e) =>
-                   handleChange(e)
-                  }
+                  onChange={(e) => handleChange(e)}
                   required
                   name="city"
                 >
@@ -588,7 +573,7 @@ const [confirmPassword, setConfirmPassword] = useState("");
                   <option value={"Adama"}>Adama</option>
                   <option value={"Mekelle"}>Mekelle</option>
                 </select>
-               
+
                 <MapPinHouse className="w-5 h-5 text-gray-400 absolute left-4 top-3.5" />
               </div>
             </div>
