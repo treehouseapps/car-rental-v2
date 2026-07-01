@@ -1,6 +1,5 @@
 const db = require("../../db/config");
-const { v4 : uuidv4 } = require('uuid')
-
+const { v4: uuidv4 } = require("uuid");
 
 exports.allVehicleReservationService = async ({ id }) => {
   const [rows] = await db.query("SELECT * FROM reservation WHERE C_ID = ? ", [
@@ -8,13 +7,14 @@ exports.allVehicleReservationService = async ({ id }) => {
   ]);
 
   for (let items of rows) {
-    let DriverID = items.D_ID
+    let DriverID = items.D_ID;
     if (DriverID == null) {
-      continue
+      continue;
     }
-    const [driver] = await db.query("SELECT * FROM driver WHERE D_ID = ?", [DriverID])
-    items.driverDetail = driver[0]
-
+    const [driver] = await db.query("SELECT * FROM driver WHERE D_ID = ?", [
+      DriverID,
+    ]);
+    items.driverDetail = driver[0];
   }
   return rows;
 };
@@ -32,14 +32,16 @@ exports.vehicleReservationService = async ({
 
   const [vehicleData] = await db.query(
     "SELECT * FROM vehicle WHERE V_ID = ?",
-    vehicleId
+    vehicleId,
   );
   const driverLicensePath = reservationData.driverLicenseFilePath || null;
 
   const values = [
     userId,
     vehicleId,
-    reservationData.vehicleDriver == "NoDriver" ? null : reservationData.vehicleDriver,
+    reservationData.vehicleDriver == "NoDriver"
+      ? null
+      : reservationData.vehicleDriver,
     reservationData.pickUpDate,
     reservationData.returnDate,
     reservationData.rentDay,
@@ -52,8 +54,9 @@ exports.vehicleReservationService = async ({
 
   const [rows] = await db.query(
     "INSERT INTO reservation (C_ID, V_ID, D_ID, Pickup_Date, Return_Date, Rent_Day, Tax_Amount, total_Payment, Driver_License, Status, Confirmation_Number) VALUES(?,?,?,?,?,?,?,?,?,?,?) ",
-    values
+    values,
   );
+
   await db.query(
     "INSERT INTO user_logs (User_ID, Role, Action, Target_ID, Description,Device) VALUES (?,?,?,?,?,?)",
     [
@@ -63,24 +66,28 @@ exports.vehicleReservationService = async ({
       rows.insertId,
       `Reservation Created by userID ${userId}`,
       browser,
-    ]
+    ],
   );
 
   const [vehicle] = await db.query(
     "SELECT * FROM vehicle WHERE V_ID = ?",
-    vehicleId
+    vehicleId,
   );
 
-  const [uuID] = await db.query("SELECT Confirmation_Number FROM reservation WHERE R_ID = ?", rows.insertId)
+  const [uuID] = await db.query(
+    "SELECT Confirmation_Number FROM reservation WHERE R_ID = ?",
+    rows.insertId,
+  );
 
   await db.query(
-
     "INSERT INTO reservation_logs(Reservation_ID, C_ID, V_ID,D_ID, Admin_ID, Action_Type, Old_Status,New_Status, Tax_Amount, Pickup_Date, Return_Date, Rent_Days, Price_Per_Day, Total_Charge, Confirmation_Number) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
     [
       rows.insertId,
       userId,
       vehicleId,
-      reservationData.vehicleDriver == "NoDriver" ? null : reservationData.vehicleDriver,
+      reservationData.vehicleDriver == "NoDriver"
+        ? null
+        : reservationData.vehicleDriver,
       vehicle[0].A_ID,
       "created",
       "No status",
@@ -91,8 +98,8 @@ exports.vehicleReservationService = async ({
       reservationData.rentDay,
       vehicle[0].Price_Per_Day,
       reservationData.TotalPayment,
-      uuID[0].Confirmation_Number
-    ]
+      uuID[0].Confirmation_Number,
+    ],
   );
 
   return rows;
@@ -108,7 +115,7 @@ exports.vehicleReservationUpdateService = async ({
   // 1. Check reservation exists
   const [existing] = await db.query(
     "SELECT * FROM reservation WHERE R_ID = ?",
-    [reservationID]
+    [reservationID],
   );
 
   if (existing.length === 0) {
@@ -118,10 +125,7 @@ exports.vehicleReservationUpdateService = async ({
   // 2. Normalize driver ID (NO NaN EVER)
   let driverID = null;
 
-  if (
-    updatingData.vehicleDriver &&
-    updatingData.vehicleDriver !== "NoDriver"
-  ) {
+  if (updatingData.vehicleDriver && updatingData.vehicleDriver !== "NoDriver") {
     driverID = Number(updatingData.vehicleDriver);
     if (Number.isNaN(driverID)) {
       driverID = null;
@@ -137,10 +141,7 @@ exports.vehicleReservationUpdateService = async ({
   }
 
   // If no driver AND new image uploaded → update license
-  if (
-    driverID === null &&
-    updatingData.driverLicensePhoto
-  ) {
+  if (driverID === null && updatingData.driverLicensePhoto) {
     driverLicensePath = updatingData.driverLicensePhoto;
   }
 
@@ -165,7 +166,7 @@ exports.vehicleReservationUpdateService = async ({
       updatingData.tax,
       driverLicensePath,
       reservationID,
-    ]
+    ],
   );
 
   // 5. Insert user log
@@ -180,14 +181,13 @@ exports.vehicleReservationUpdateService = async ({
       reservationID,
       `Updated reservation by user ${existing[0].C_ID}`,
       browser,
-    ]
+    ],
   );
 
   // 6. Fetch vehicle info
-  const [vehicle] = await db.query(
-    "SELECT * FROM vehicle WHERE V_ID = ?",
-    [existing[0].V_ID]
-  );
+  const [vehicle] = await db.query("SELECT * FROM vehicle WHERE V_ID = ?", [
+    existing[0].V_ID,
+  ]);
 
   // 7. Insert reservation log
   await db.query(
@@ -224,10 +224,9 @@ exports.vehicleReservationUpdateService = async ({
       updatingData.tax,
       updatingData.totalPayment,
       existing[0].Confirmation_Number,
-    ]
+    ],
   );
 };
-
 
 // ================================================================
 
@@ -237,7 +236,7 @@ exports.vehicleReservationDeleteService = async ({
 }) => {
   const [findID] = await db.query(
     "SELECT * FROM reservation WHERE R_ID = ?",
-    reservationID
+    reservationID,
   );
   if (findID.length === 0) {
     throw new Error("there is no reservation in this ID to Delete.");
@@ -254,15 +253,16 @@ exports.vehicleReservationDeleteService = async ({
       reservationID,
       `Deleted Reservation by userID ${findID[0].C_ID}`,
       browser,
-    ]
+    ],
   );
   const [vehicle] = await db.query(
     "SELECT * FROM vehicle WHERE V_ID = ?",
-    findID[0].V_ID
+    findID[0].V_ID,
   );
   await db.query(
     "INSERT INTO reservation_logs(Reservation_ID, C_ID, V_ID, Admin_ID, D_ID, Action_Type, Old_Status, New_Status, Pickup_Date, Return_Date, Rent_Days, Price_Per_Day, Total_Charge, Confirmation_Number) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-    [reservationID,
+    [
+      reservationID,
       findID[0].C_ID,
       findID[0].V_ID,
       vehicle[0].A_ID,
@@ -275,8 +275,8 @@ exports.vehicleReservationDeleteService = async ({
       findID[0].Rent_Day,
       vehicle[0].Price_Per_Day,
       findID[0].total_Payment,
-      findID[0].Confirmation_Number
-    ]
+      findID[0].Confirmation_Number,
+    ],
   );
 };
 
@@ -284,30 +284,30 @@ exports.vehicleReservationDeleteService = async ({
 exports.SingleVehicleReservationService = async ({ reservationID }) => {
   const [rows] = await db.query(
     "SELECT * FROM reservation WHERE R_ID = ?",
-    reservationID
+    reservationID,
   );
 
-  const [driver] = await db.query("SELECT * FROM driver WHERE D_ID = ?", [rows[0].D_ID])
-  rows[0].driverDetail = driver[0]
+  const [driver] = await db.query("SELECT * FROM driver WHERE D_ID = ?", [
+    rows[0].D_ID,
+  ]);
+  rows[0].driverDetail = driver[0];
 
   return rows;
 };
 
 //  ============================================================
 exports.rentedVehicleService = async ({ userId }) => {
-  const [rows] = await db.query(
-    "SELECT * FROM rent WHERE C_ID  = ?",
-    userId
-  );
+  const [rows] = await db.query("SELECT * FROM rent WHERE C_ID  = ?", userId);
 
   for (let items of rows) {
-    let DriverID = items.D_ID
+    let DriverID = items.D_ID;
     if (DriverID == null) {
-      continue
+      continue;
     }
-    const [driver] = await db.query("SELECT * FROM driver WHERE D_ID = ?", [DriverID])
-    items.driverDetail = driver[0]
-
+    const [driver] = await db.query("SELECT * FROM driver WHERE D_ID = ?", [
+      DriverID,
+    ]);
+    items.driverDetail = driver[0];
   }
 
   return rows;
@@ -316,16 +316,17 @@ exports.rentedVehicleService = async ({ userId }) => {
 exports.rejectedVehicleService = async ({ userId }) => {
   const [rows] = await db.query(
     "SELECT * FROM reservation_logs WHERE C_ID  = ?",
-    userId
+    userId,
   );
   for (let items of rows) {
-    let DriverID = items.D_ID
+    let DriverID = items.D_ID;
     if (DriverID == null) {
-      continue
+      continue;
     }
-    const [driver] = await db.query("SELECT * FROM driver WHERE D_ID = ?", [DriverID])
-    items.driverDetail = driver[0]
-
+    const [driver] = await db.query("SELECT * FROM driver WHERE D_ID = ?", [
+      DriverID,
+    ]);
+    items.driverDetail = driver[0];
   }
   return rows;
 };
@@ -335,10 +336,9 @@ exports.rejectedVehicleService = async ({ userId }) => {
 exports.singleRentedService = async ({ rid }) => {
   const [rows] = await db.query(
     "SELECT * FROM rent WHERE  Reservation_R_ID  = ?",
-    rid
+    rid,
   );
   return rows;
-
 };
 
 // =============================================================
@@ -346,7 +346,7 @@ exports.singleRentedService = async ({ rid }) => {
 exports.addPaymentPictureService = async ({ rid, imagePath }) => {
   const [rows] = await db.query(
     "SELECT R_ID, Payment_Photo FROM reservation WHERE R_ID = ?",
-    [rid]
+    [rid],
   );
 
   if (rows.length === 0) {
@@ -355,7 +355,7 @@ exports.addPaymentPictureService = async ({ rid, imagePath }) => {
 
   const [result] = await db.query(
     `UPDATE reservation SET Payment_Photo = ? WHERE R_ID = ?`,
-    [imagePath, rid]
+    [imagePath, rid],
   );
 
   if (result.affectedRows === 0) {

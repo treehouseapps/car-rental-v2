@@ -7,16 +7,16 @@ const {
   rentedVehicleService,
   singleRentedService,
   rejectedVehicleService,
-  addPaymentPictureService
+  addPaymentPictureService,
 } = require("../../service/user/vehicle.reservation.service");
 
 exports.allVehicleReservationController = async (req, res) => {
   try {
-    const user = req.user
-    const paramsId = req.params.id
-    console.log(user, paramsId)
+    const user = req.user;
+    const paramsId = req.params.id;
+    console.log(user, paramsId);
     if (user.id != paramsId) {
-      res.status(403).json({ message: "SOME ONE CHANGED THE LINK." })
+      res.status(403).json({ message: "SOME ONE CHANGED THE LINK." });
     }
     const result = await allVehicleReservationService({ id: req.params.id });
     res.status(200).json(result);
@@ -32,6 +32,7 @@ exports.vehicleReservationController = async (req, res) => {
     const browser = req.headers["user-agent"];
 
     const reservationData = { ...req.body };
+
     if (req.file) {
       reservationData.driverLicenseFilePath = `/uploads/userLicense/${req.file.filename}`;
     }
@@ -40,7 +41,7 @@ exports.vehicleReservationController = async (req, res) => {
       reservationData,
       userId: req.params.id,
       vehicleId: req.params.vehicleid,
-      browser: browser
+      browser: browser,
     });
 
     if (result) {
@@ -64,10 +65,9 @@ exports.vehicleReservationUpdateController = async (req, res) => {
   try {
     const browser = req.headers["user-agent"];
     const updatingData = { ...req.body };
-    console.log(updatingData)
+    console.log(updatingData);
     if (req.file) {
-      updatingData.driverLicensePhoto =
-        `/uploads/userLicense/${req.file.filename}`;
+      updatingData.driverLicensePhoto = `/uploads/userLicense/${req.file.filename}`;
     }
 
     await vehicleReservationUpdateService({
@@ -85,15 +85,13 @@ exports.vehicleReservationUpdateController = async (req, res) => {
   }
 };
 
-
-
 // ======================================================
 exports.vehicleReservationDeleteController = async (req, res) => {
   try {
     const browser = req.headers["user-agent"];
     await vehicleReservationDeleteService({
       reservationID: req.params.reservationid,
-      browser: browser
+      browser: browser,
     });
     res.send({ message: "Deleted successfully." });
   } catch (error) {

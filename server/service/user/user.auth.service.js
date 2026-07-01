@@ -8,7 +8,7 @@ exports.userAuthService = async (loginData, browser) => {
   // console.log(values)
   const [passChecker] = await db.query(
     "SELECT * FROM customer WHERE Email = ?",
-    values[0]
+    values[0],
   );
   if (passChecker.length === 0) {
     throw new Error("Invalid email or password.");
@@ -21,7 +21,7 @@ exports.userAuthService = async (loginData, browser) => {
   }
   const [rows] = await db.query(
     "SELECT C_ID, FullName, Email FROM customer WHERE Email = ?",
-    values[0]
+    values[0],
   );
   // console.log(rows)
   const JWTSecretKey = process.env.JWT_SECRET;
@@ -35,7 +35,7 @@ exports.userAuthService = async (loginData, browser) => {
       "Login.",
       `Account Logged In by userID ${rows[0].C_ID}`,
       browser,
-    ]
+    ],
   );
 
   const email = rows[0].email;
@@ -63,7 +63,7 @@ exports.userVerifyService = async (tokenKey) => {
   try {
     const verified = jwt.verify(token, jwtSecretKey);
     if (verified) {
-      // console.log(verified);
+      console.log(verified);
       return verified;
     } else {
       throw new Error("Token is Not verified.");
@@ -91,19 +91,18 @@ const userSchema = z.object({
 exports.userRegisterService = async (body, browser) => {
   const registerData = body;
   const validation = userSchema.safeParse(registerData);
-   if (!validation.success) {
+  if (!validation.success) {
     return {
       type: "zod",
-      errors: validation.error.errors.map(err => ({
+      errors: validation.error.errors.map((err) => ({
         field: err.path[0],
         message: err.message,
         code: err.code,
       })),
     };
   }
-console.log(1)
 
-   const validateRegister = validation.data;
+  const validateRegister = validation.data;
   const saltRounds = 10;
   let hashedPass = await bcrypt.hash(validateRegister.password, saltRounds);
 
@@ -122,21 +121,21 @@ console.log(1)
 
   const [checkData] = await db.query(
     "SELECT Email FROM customer WHERE Email = ?",
-    [validateRegister.email]
+    [validateRegister.email],
   );
 
   if (checkData.length > 0) {
-      return{
-        type : "custom",
-        message : `there is an email already created: ${validateRegister.email}`
-      }
+    return {
+      type: "custom",
+      message: `there is an email already created: ${validateRegister.email}`,
+    };
   }
-console.log(2)
+
   const [data] = await db.query(
     "INSERT INTO customer (FullName , Email, Password, PhoneNumber, DoB,Nationality, City,Update_Date) VALUES (?,?,?,?,?,?,?,?)",
-    result
+    result,
   );
-  // console.log(data.insertId, browser)
+
   await db.query(
     "INSERT INTO user_logs (User_ID, Role, Action, Description,Device) VALUES (?,?,?,?,?)",
     [
@@ -145,12 +144,12 @@ console.log(2)
       "Account Created.",
       `Account created by userID ${data.insertId}`,
       browser,
-    ]
+    ],
   );
 
   const [getIdForToken] = await db.query(
     "SELECT C_ID,FullName,Email FROM customer WHERE Email = ?",
-    validateRegister.email
+    validateRegister.email,
   );
 
   // console.log(getIdForToken);
@@ -168,17 +167,15 @@ console.log(2)
 
   const token = jwt.sign(jwtData, JWTSecretKey);
 
-  console.log(token)
   return token;
 };
 
 // ================================================================
 
 exports.forgotPasswordService = async (email) => {
-
   const [user] = await db.query(
     "SELECT C_ID, Email FROM customer WHERE Email = ?",
-    [email]
+    [email],
   );
 
   if (user.length === 0) {
@@ -186,8 +183,8 @@ exports.forgotPasswordService = async (email) => {
   }
 
   function generateToken(length = 16) {
-    const chars = '0123456789abcdef';
-    let token = '';
+    const chars = "0123456789abcdef";
+    let token = "";
     for (let i = 0; i < length; i++) {
       token += chars[Math.floor(Math.random() * chars.length)];
     }
@@ -199,16 +196,16 @@ exports.forgotPasswordService = async (email) => {
 
   await db.query(
     "UPDATE customer SET reset_token = ?, reset_token_expiry = ? WHERE Email = ?",
-    [token, expiry, email]
+    [token, expiry, email],
   );
 
   return { token, email };
-}
+};
 
 exports.tokenExistService = async (token) => {
   const [user] = await db.query(
     "SELECT C_ID, reset_token, reset_token_expiry FROM customer WHERE reset_token = ?",
-    [token]
+    [token],
   );
   if (user.length === 0) {
     throw new Error("Invalid token");
@@ -218,12 +215,12 @@ exports.tokenExistService = async (token) => {
     throw new Error("Token has expired");
   }
   return true;
-}
+};
 
 exports.resetPasswordService = async (token, newPassword) => {
   const [user] = await db.query(
     "SELECT C_ID FROM customer WHERE reset_token = ?",
-    [token]
+    [token],
   );
   if (user.length === 0) {
     throw new Error("Invalid token");
@@ -232,7 +229,7 @@ exports.resetPasswordService = async (token, newPassword) => {
   let hashedPass = await bcrypt.hash(newPassword, saltRounds);
   await db.query(
     "UPDATE customer SET Password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = ?",
-    [hashedPass, token]
+    [hashedPass, token],
   );
   return true;
 };

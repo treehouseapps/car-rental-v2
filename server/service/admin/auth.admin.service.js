@@ -8,7 +8,7 @@ exports.adminLoginService = async (data, browser) => {
 
   const [passChecker] = await db.query(
     "SELECT * FROM admin WHERE Username = ?",
-    values[0]
+    values[0],
   );
 
   if (passChecker.length === 0) {
@@ -16,14 +16,16 @@ exports.adminLoginService = async (data, browser) => {
   }
   const password = passChecker[0].Password;
   const match = await bcrypt.compare(values[1], password);
+
   if (!match) {
     throw new Error("Invalid email or password.");
   }
+
   const [rows] = await db.query(
     "SELECT A_ID, Username, type FROM admin WHERE Username = ?",
-    loginData.username
+    loginData.username,
   );
-  console.log(rows)
+  console.log(rows);
   if (rows.length == 0) {
     return {
       success: false,
@@ -39,7 +41,7 @@ exports.adminLoginService = async (data, browser) => {
       "Admin Login",
       `Admin logged In by AdminID ${rows[0].A_ID}`,
       browser,
-    ]
+    ],
   );
 
   const JWTSecretKey = process.env.JWT_ADMIN_SECRET;
@@ -52,15 +54,16 @@ exports.adminLoginService = async (data, browser) => {
     signInTime: Date.now(),
     id,
     name,
-    type
+    type,
   };
   const token = jwt.sign(jwtData, JWTSecretKey);
   const response = {
-    user: rows[0], token,
+    user: rows[0],
+    token,
   };
 
   return response;
-}
+};
 
 // ====================================
 
@@ -83,7 +86,7 @@ exports.adminVerifyService = async (tokenKey) => {
 // ====================================
 
 exports.adminPageService = async (params) => {
-  const id = params.id
-  const [rows] = await db.query("SELECT * FROM admin WHERE A_ID = ? ", id)
-  return rows
-}
+  const id = params.id;
+  const [rows] = await db.query("SELECT * FROM admin WHERE A_ID = ? ", id);
+  return rows;
+};
