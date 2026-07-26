@@ -32,6 +32,7 @@ const Register = () => {
     city: "Addis Ababa",
   });
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const [showPassword, setShowPassword] = useState({
     password: false,
@@ -136,6 +137,8 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!acceptedTerms) return;
+
     const hasErrors = Object.values(errors).some(Boolean);
     if (hasErrors) return;
 
@@ -578,16 +581,39 @@ const Register = () => {
               </div>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              className="w-full px-4 py-3 register-bg text-white rounded-lg font-medium 
-                        transition-colors flex items-center justify-center gap-2"
-            >
-              <UserPlus className="w-5 h-5" />
-              Create Account
-            </motion.button>
+            <label className="flex items-start gap-3 text-sm text-gray-600 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-gray-300 text-green-500 focus:ring-green-500"
+              />
+              <span>
+                I agree to the{" "}
+                <Link
+                  to="/terms-and-conditions"
+                  className="font-medium text-green-500 hover:text-green-600"
+                >
+                  Terms &amp; Conditions
+                </Link>
+                .
+              </span>
+            </label>
+
+            {acceptedTerms && (
+              <motion.button
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                className="w-full px-4 py-3 register-bg text-white rounded-lg font-medium
+                          transition-colors flex items-center justify-center gap-2"
+              >
+                <UserPlus className="w-5 h-5" />
+                Create Account
+              </motion.button>
+            )}
           </form>
 
           <p className="mt-8 text-center text-gray-600">
