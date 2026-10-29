@@ -14,7 +14,7 @@ function LoginForm() {
         const token = localStorage.getItem("jwt-token");
 
         const responseVerify = await fetch(
-          "http://localhost:3000/api/admin/verify",
+          "https://car-rental-v2-sand.vercel.app/api/admin/verify",
           {
             method: "POST",
             headers: {
@@ -37,13 +37,16 @@ function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:3000/api/admin/login", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
+      const response = await fetch(
+        "https://car-rental-v2-sand.vercel.app/api/admin/login",
+        {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(formData),
         },
-        body: JSON.stringify(formData),
-      });
+      );
       if (!response.ok) {
         setError("Invalid username or password.");
       }

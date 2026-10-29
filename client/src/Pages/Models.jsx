@@ -45,7 +45,9 @@ const Models = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/vehicles");
+        const response = await fetch(
+          "https://car-rental-v2-sand.vercel.app/api/vehicles",
+        );
         if (!response.ok) {
           console.log("there is not token to login.", await response.json());
         }
@@ -56,7 +58,7 @@ const Models = () => {
         // console.log(result);
 
         const reserveResponse = await fetch(
-          "http://localhost:3000/api/reservation/vehicle"
+          "https://car-rental-v2-sand.vercel.app/api/reservation/vehicle",
         );
         if (!reserveResponse.ok) {
           console.log("can not fetch the reservation list from vehicles.");
@@ -65,9 +67,9 @@ const Models = () => {
         const reserveResult = await reserveResponse.json();
         // console.log(reserveResult);
 
-       for(let i = 0 ; i <result.length; i++){
-        result[i].status = ""
-       }
+        for (let i = 0; i < result.length; i++) {
+          result[i].status = "";
+        }
 
         for (let i = 0; i < result.length; i++) {
           // result[i].image = JSON.parse(result[i].Images)
@@ -79,7 +81,7 @@ const Models = () => {
               result[i].status = reserveResult[j].Status;
               result[i].availableFor = reserveResult[j].Return_Date;
 
-                if (reserveResult[j].Status === "onHold") {
+              if (reserveResult[j].Status === "onHold") {
                 const pickup = new Date(reserveResult[j].Pickup_Date);
 
                 // pickup date - 7 days
@@ -88,8 +90,6 @@ const Models = () => {
 
                 result[i].until = availableUntil.toLocaleDateString("en-CA");
               }
-                      
-              
             }
           }
         }
@@ -107,7 +107,7 @@ const Models = () => {
       name: "All",
     },
     {
-      name: ""
+      name: "",
     },
     {
       name: "pending",
@@ -119,13 +119,13 @@ const Models = () => {
   const booking = async (V_ID) => {
     const token = localStorage.getItem("jwt-token");
     const responseVerify = await fetch(
-      "http://localhost:3000/api/user/verify",
+      "https://car-rental-v2-sand.vercel.app/api/user/verify",
       {
         method: "POST",
         headers: {
           "jwt-token": token,
         },
-      }
+      },
     );
     if (!responseVerify.ok) {
       navigate("/login");
@@ -136,10 +136,10 @@ const Models = () => {
   };
 
   const filteredVehicles = result.filter((car) => {
-      const matchesCategory =
+    const matchesCategory =
       selectedCategory === "All" || car.status === selectedCategory;
     const filtered = car.V_Name.toLowerCase().includes(
-      searchQuery.toLowerCase()
+      searchQuery.toLowerCase(),
     );
     return filtered && matchesCategory;
   });
@@ -204,7 +204,15 @@ const Models = () => {
                              }`}
                   >
                     <Car className="w-5 h-5" />
-                    <span>{category.name === "All" ? "All" : category.name === "pending" ? "Booked" : category.name ==="" ? "Available" : "Rented"}</span>
+                    <span>
+                      {category.name === "All"
+                        ? "All"
+                        : category.name === "pending"
+                          ? "Booked"
+                          : category.name === ""
+                            ? "Available"
+                            : "Rented"}
+                    </span>
                   </motion.button>
                 ))}
               </div>
@@ -233,7 +241,16 @@ const Models = () => {
                     {/* Car Image */}
                     <div className="aspect-[4/3] rounded-lg bg-white mb-6 overflow-hidden">
                       <a
-                        style={{ pointerEvents: car.status === "confirmed" ? "none" : car.status === "onhHold" ? "unset" : car.status=="pending" ? "none" : "unset" }}
+                        style={{
+                          pointerEvents:
+                            car.status === "confirmed"
+                              ? "none"
+                              : car.status === "onhHold"
+                                ? "unset"
+                                : car.status == "pending"
+                                  ? "none"
+                                  : "unset",
+                        }}
                         href={`/singlemodel/${car.V_Name}/${car.V_ID}`}
                       >
                         <img
@@ -279,7 +296,9 @@ const Models = () => {
                       </div>
 
                       {/* Rating and Book Button */}
-                      <div className={`flex items-center ${car.status == 'confirmed' ? "justify-center" : "justify-between"} `}>
+                      <div
+                        className={`flex items-center ${car.status == "confirmed" ? "justify-center" : "justify-between"} `}
+                      >
                         <div className="flex flex-col items-center">
                           <span
                             className={`flex gap-2 font-medium ${
@@ -292,34 +311,41 @@ const Models = () => {
                             {statusTitle[car.status] || "available"}
                           </span>
                           <span className={`text-sm`}>
-                            {car.status== "confirmed"
+                            {car.status == "confirmed"
                               ? "Available on " +
                                 new Date(car.availableFor).toLocaleDateString(
-                                  "en-CA"
+                                  "en-CA",
                                 )
-                              :car.status== "onHold" ? 
-                               "Available until " +
-                                new Date(car.until).toLocaleDateString(
-                                  "en-CA"
-                                ) : ""}
+                              : car.status == "onHold"
+                                ? "Available until " +
+                                  new Date(car.until).toLocaleDateString(
+                                    "en-CA",
+                                  )
+                                : ""}
                           </span>
                         </div>
-                        
+
                         {car.status !== "confirmed" && (
-                           <motion.a
-                          style={{
-                            pointerEvents: car.status === "confirmed" ? "none" : car.status === "onHold" ? "unset" : car.status=="pending" ? "none" : "unset"
-                          }}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => booking(car.V_ID)}
-                          className={`px-6 py-2  text-white rounded-lg ${car.status == 'pending' ? 'bg-red-400/50': 'bg-green-500 hover:bg-green-600 ' } 
+                          <motion.a
+                            style={{
+                              pointerEvents:
+                                car.status === "confirmed"
+                                  ? "none"
+                                  : car.status === "onHold"
+                                    ? "unset"
+                                    : car.status == "pending"
+                                      ? "none"
+                                      : "unset",
+                            }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => booking(car.V_ID)}
+                            className={`px-6 py-2  text-white rounded-lg ${car.status == "pending" ? "bg-red-400/50" : "bg-green-500 hover:bg-green-600 "} 
                                  transition-colors cursor-pointer`}
-                        >
-                          {car.status == "pending" ? "Soon" : "Book Now"}
-                        </motion.a>
+                          >
+                            {car.status == "pending" ? "Soon" : "Book Now"}
+                          </motion.a>
                         )}
-                        
                       </div>
                     </div>
                   </div>

@@ -33,14 +33,18 @@ const printHistory = async (result) => {
     // -----------------------------
     // FETCH VEHICLE
     // -----------------------------
-    const vehicleResponse = await fetch(`http://localhost:3000/api/vehicle/${r.V_ID}`);
+    const vehicleResponse = await fetch(
+      `https://car-rental-v2-sand.vercel.app/api/vehicle/${r.V_ID}`,
+    );
     const vehicleResult = await vehicleResponse.json();
     const vehicle = vehicleResult[0];
 
     // -----------------------------
     // FETCH CUSTOMER
     // -----------------------------
-    const customerResponse = await fetch(`http://localhost:3000/api/user/admin/${r.C_ID}`);
+    const customerResponse = await fetch(
+      `https://car-rental-v2-sand.vercel.app/api/user/admin/${r.C_ID}`,
+    );
     const customerResult = await customerResponse.json();
     const customer = customerResult[0];
 
@@ -73,11 +77,29 @@ const printHistory = async (result) => {
     const logoY = 750;
     const titleY = logoY + 50;
 
-    page.drawText(segment1, { x: startX, y: titleY, size: titleFontSize, font: bold, color: rgb(0, 0.5, 0) });
+    page.drawText(segment1, {
+      x: startX,
+      y: titleY,
+      size: titleFontSize,
+      font: bold,
+      color: rgb(0, 0.5, 0),
+    });
     startX += titleWidth1;
-    page.drawText(segment2, { x: startX, y: titleY, size: titleFontSize, font: bold, color: rgb(0.9, 0.8, 0) });
+    page.drawText(segment2, {
+      x: startX,
+      y: titleY,
+      size: titleFontSize,
+      font: bold,
+      color: rgb(0.9, 0.8, 0),
+    });
     startX += titleWidth2;
-    page.drawText(segment3, { x: startX, y: titleY, size: titleFontSize, font: bold, color: rgb(0.8, 0, 0) });
+    page.drawText(segment3, {
+      x: startX,
+      y: titleY,
+      size: titleFontSize,
+      font: bold,
+      color: rgb(0.8, 0, 0),
+    });
 
     // -----------------------------
     // LOGO
@@ -88,7 +110,12 @@ const printHistory = async (result) => {
     const logoW = 60;
     const logoH = (logo.height / logo.width) * logoW;
 
-    page.drawImage(logo, { x: width / 2 - logoW / 2, y: logoY, width: logoW, height: logoH });
+    page.drawImage(logo, {
+      x: width / 2 - logoW / 2,
+      y: logoY,
+      width: logoW,
+      height: logoH,
+    });
 
     // -----------------------------
     // WATERMARK (Subtle)
@@ -96,7 +123,13 @@ const printHistory = async (result) => {
     const wmW = 200;
     const wmImage = await embedAnyImage(pdfDoc, logoUrl);
     const wmH = (wmImage.height / wmImage.width) * wmW;
-    page.drawImage(wmImage, { x: width / 2 - wmW / 2, y: 350, width: wmW, height: wmH, opacity: 0.07 });
+    page.drawImage(wmImage, {
+      x: width / 2 - wmW / 2,
+      y: 350,
+      width: wmW,
+      height: wmH,
+      opacity: 0.07,
+    });
 
     // -----------------------------
     // VEHICLE IMAGE
@@ -120,8 +153,20 @@ const printHistory = async (result) => {
           const tableWidth = width - 2 * tableMargin;
           const imgX = tableMargin + tableWidth / 2 - imgW / 2;
 
-          page.drawRectangle({ x: imgX - 2, y: imageY - imgH - 2, width: imgW + 4, height: imgH + 4, borderColor: rgb(0,0,0), borderWidth: 1 });
-          page.drawImage(vehicleImage, { x: imgX, y: imageY - imgH, width: imgW, height: imgH });
+          page.drawRectangle({
+            x: imgX - 2,
+            y: imageY - imgH - 2,
+            width: imgW + 4,
+            height: imgH + 4,
+            borderColor: rgb(0, 0, 0),
+            borderWidth: 1,
+          });
+          page.drawImage(vehicleImage, {
+            x: imgX,
+            y: imageY - imgH,
+            width: imgW,
+            height: imgH,
+          });
           imageY = imageY - imgH - 15;
         }
       }
@@ -138,23 +183,58 @@ const printHistory = async (result) => {
       const tableHeight = rows.length * rowH;
       const startX = tableMargin;
 
-      page.drawRectangle({ x: startX, y: startY - tableHeight, width: tableWidth, height: tableHeight, borderWidth: 1, borderColor: rgb(0,0,0) });
+      page.drawRectangle({
+        x: startX,
+        y: startY - tableHeight,
+        width: tableWidth,
+        height: tableHeight,
+        borderWidth: 1,
+        borderColor: rgb(0, 0, 0),
+      });
 
       rows.forEach((row, i) => {
         const y = startY - i * rowH;
-        page.drawLine({ start: { x: startX, y }, end: { x: startX + tableWidth, y }, thickness: 1, color: rgb(0,0,0) });
+        page.drawLine({
+          start: { x: startX, y },
+          end: { x: startX + tableWidth, y },
+          thickness: 1,
+          color: rgb(0, 0, 0),
+        });
 
         if (i % 2 === 0) {
-          page.drawRectangle({ x: startX, y: y - rowH, width: tableWidth, height: rowH, color: rgb(0.95,0.95,0.95) });
+          page.drawRectangle({
+            x: startX,
+            y: y - rowH,
+            width: tableWidth,
+            height: rowH,
+            color: rgb(0.95, 0.95, 0.95),
+          });
         }
       });
 
-      page.drawLine({ start: { x: startX + col1, y: startY }, end: { x: startX + col1, y: startY - tableHeight }, thickness: 1, color: rgb(0,0,0) });
+      page.drawLine({
+        start: { x: startX + col1, y: startY },
+        end: { x: startX + col1, y: startY - tableHeight },
+        thickness: 1,
+        color: rgb(0, 0, 0),
+      });
 
       let yText = startY - rowH + padding;
       rows.forEach(([key, value]) => {
-        page.drawText(key, { x: startX + 10, y: yText, size: fontSize, font: bold, color: rgb(0.0, 0.5, 0) });
-        page.drawText(String(value), { x: startX + col1 + 10, y: yText, size: fontSize, font, color: rgb(0.1,0.1,0.1) });
+        page.drawText(key, {
+          x: startX + 10,
+          y: yText,
+          size: fontSize,
+          font: bold,
+          color: rgb(0.0, 0.5, 0),
+        });
+        page.drawText(String(value), {
+          x: startX + col1 + 10,
+          y: yText,
+          size: fontSize,
+          font,
+          color: rgb(0.1, 0.1, 0.1),
+        });
         yText -= rowH;
       });
 
@@ -191,7 +271,13 @@ const printHistory = async (result) => {
     // -----------------------------
     // FOOTER
     // -----------------------------
-    page.drawText("Generated by SAMI Rental System", { x: 40, y: nextY - 20, size: 9, font, color: rgb(0.5,0.5,0.5) });
+    page.drawText("Generated by SAMI Rental System", {
+      x: 40,
+      y: nextY - 20,
+      size: 9,
+      font,
+      color: rgb(0.5, 0.5, 0.5),
+    });
 
     // -----------------------------
     // DOWNLOAD PDF
@@ -202,7 +288,6 @@ const printHistory = async (result) => {
     a.href = URL.createObjectURL(blob);
     a.download = "Reservation_History.pdf";
     a.click();
-
   } catch (err) {
     console.log("Printable ERROR →", err);
   }

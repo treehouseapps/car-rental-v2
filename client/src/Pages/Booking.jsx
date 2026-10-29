@@ -33,7 +33,7 @@ const CarDetailPage = () => {
       try {
         const token = localStorage.getItem("jwt-token");
         const responseVerify = await fetch(
-          "http://localhost:3000/api/user/verify",
+          "https://car-rental-v2-sand.vercel.app/api/user/verify",
           {
             method: "POST",
             headers: { "jwt-token": token },
@@ -49,7 +49,9 @@ const CarDetailPage = () => {
         const resultVerify = await responseVerify.json();
         setUserData(resultVerify);
 
-        const response = await fetch(`http://localhost:3000/api/vehicle/${id}`);
+        const response = await fetch(
+          `https://car-rental-v2-sand.vercel.app/api/vehicle/${id}`,
+        );
         if (!response.ok) {
           const errorData = await response.json();
           // console.log(errorData)
@@ -68,7 +70,7 @@ const CarDetailPage = () => {
         setImageCount(result[0].image.length);
 
         const driverResult = await fetch(
-          `http://localhost:3000/api/driver/active`,
+          `https://car-rental-v2-sand.vercel.app/api/driver/active`,
         );
         if (!driverResult.ok) {
           console.log("there is no driver available right now.");
@@ -121,7 +123,7 @@ const CarDetailPage = () => {
         formData.append("driverLicensePhoto", driverLicensePhoto);
       }
       const response = await fetch(
-        `http://localhost:3000/api/user/reservation/${userData.id}/${id}`,
+        `https://car-rental-v2-sand.vercel.app/api/user/reservation/${userData.id}/${id}`,
         {
           method: "POST",
           body: formData,

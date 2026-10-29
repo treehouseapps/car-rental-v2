@@ -16,14 +16,13 @@ const MyReservation = () => {
   const [confirmed, setConfirmed] = useState([]);
   const [old, setOld] = useState([]);
   const [reject, setReject] = useState([]);
-  const [findDriver, setFindDriver] = useState()
+  const [findDriver, setFindDriver] = useState();
   const [history, setHistory] = useState("pending");
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
   const [paymentImage, setPaymentImage] = useState(null);
   const [paymentPreview, setPaymentPreview] = useState(null);
   const [selectedReservation, setSelectedReservation] = useState(null);
-  const [doc , setDoc] = useState()
-  
+  const [doc, setDoc] = useState();
 
   const navigate = useNavigate();
 
@@ -33,13 +32,13 @@ const MyReservation = () => {
         const token = localStorage.getItem("jwt-token");
         try {
           const response = await fetch(
-            "http://localhost:3000/api/user/verify",
+            "https://car-rental-v2-sand.vercel.app/api/user/verify",
             {
               method: "POST",
               headers: {
                 "jwt-token": token,
               },
-            }
+            },
           );
 
           if (!response.ok) {
@@ -49,12 +48,13 @@ const MyReservation = () => {
           const result = await response.json();
           setTokenId(result);
 
-          const check =  await fetch(`http://localhost:3000/api/user/document/check/${result.id}`)
-            
-           const checkComplete = await check.json()
-            setDoc(checkComplete.doc)
-            // console.log(result)
+          const check = await fetch(
+            `https://car-rental-v2-sand.vercel.app/api/user/document/check/${result.id}`,
+          );
 
+          const checkComplete = await check.json();
+          setDoc(checkComplete.doc);
+          // console.log(result)
         } catch (e) {
           console.log("network Error", e);
         }
@@ -69,12 +69,12 @@ const MyReservation = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:3000/api/user/reservation/${id}`,
+          `https://car-rental-v2-sand.vercel.app/api/user/reservation/${id}`,
           {
             headers: {
               authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         if (!response.ok) {
           // console.log("there is no reservation.", tokenId);
@@ -90,7 +90,7 @@ const MyReservation = () => {
 
         const vehicleSearch = async (key) => {
           const vehicleDetail = await fetch(
-            `http://localhost:3000/api/vehicle/${key}`
+            `https://car-rental-v2-sand.vercel.app/api/vehicle/${key}`,
           );
 
           if (!vehicleDetail.ok) {
@@ -112,15 +112,14 @@ const MyReservation = () => {
 
         const pendingList = allData.filter((item) => item.Status == "pending");
         const confirmedList = allData.filter(
-            (item) => item.Status === "confirmed" || item.Status === "onHold"
-          );
-
+          (item) => item.Status === "confirmed" || item.Status === "onHold",
+        );
 
         setPending(pendingList);
         setConfirmed(confirmedList);
 
         const historyResponse = await fetch(
-          `http://localhost:3000/api/history/${id}`
+          `https://car-rental-v2-sand.vercel.app/api/history/${id}`,
         );
         if (!historyResponse.ok) {
           console.log("there is no rent.");
@@ -128,7 +127,7 @@ const MyReservation = () => {
 
         const historyResult = await historyResponse.json();
         const filteredHIstory = historyResult.filter(
-          (item) => item.Refund != null
+          (item) => item.Refund != null,
         );
         // console.log(historyResult)
         for (let vID of filteredHIstory) {
@@ -144,7 +143,7 @@ const MyReservation = () => {
         setOld(historyData);
 
         const RejectResponse = await fetch(
-          `http://localhost:3000/api/reject/${id}`
+          `https://car-rental-v2-sand.vercel.app/api/reject/${id}`,
         );
         if (!RejectResponse.ok) {
           console.log("there is no rejected rent.");
@@ -152,7 +151,7 @@ const MyReservation = () => {
 
         const RejectResult = await RejectResponse.json();
         const filteredReject = RejectResult.filter(
-          (item) => item.Action_Type == "rejected"
+          (item) => item.Action_Type == "rejected",
         );
         for (let vID of filteredReject) {
           const data = await vehicleSearch(vID.V_ID);
@@ -164,9 +163,7 @@ const MyReservation = () => {
           }
         }
 
-        setReject(rejectData)
-
-
+        setReject(rejectData);
       } catch (e) {
         console.log("network Error", e);
       }
@@ -175,15 +172,14 @@ const MyReservation = () => {
   }, [tokenId, id, navigate]);
 
   const printHandler = async (id) => {
-
     const token = localStorage.getItem("jwt-token");
     const response = await fetch(
-      `http://localhost:3000/api/reservation/single/${id}`,
+      `https://car-rental-v2-sand.vercel.app/api/reservation/single/${id}`,
       {
         headers: {
           authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     if (!response.ok) {
       console.log("there is no reservation.", tokenId);
@@ -192,14 +188,13 @@ const MyReservation = () => {
 
     const result = await response.json();
 
-    print(result)
-  }
+    print(result);
+  };
 
   const printHistoryHandler = async (id) => {
-
     // console.log(id)
     const historyResponse = await fetch(
-      `http://localhost:3000/api/history/single/${id}`
+      `https://car-rental-v2-sand.vercel.app/api/history/single/${id}`,
     );
     if (!historyResponse.ok) {
       console.log("there is no rent.");
@@ -207,53 +202,52 @@ const MyReservation = () => {
     const historyResult = await historyResponse.json();
     // console.log(historyResult)
     // console.log(historyResponse)
-    printHistory(historyResult)
-  }
+    printHistory(historyResult);
+  };
 
   const handlePaymentImageChange = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+    const file = e.target.files[0];
+    if (!file) return;
 
-  setPaymentImage(file);
-  setPaymentPreview(URL.createObjectURL(file));
-};
+    setPaymentImage(file);
+    setPaymentPreview(URL.createObjectURL(file));
+  };
 
-const handleSubmitPayment = async () => {
-  if (!paymentImage || !selectedReservation) return;
+  const handleSubmitPayment = async () => {
+    if (!paymentImage || !selectedReservation) return;
 
-  const formData = new FormData();
-  formData.append("payment", paymentImage);
-  formData.append("reservationId", selectedReservation);
+    const formData = new FormData();
+    formData.append("payment", paymentImage);
+    formData.append("reservationId", selectedReservation);
 
-  try {
-    const token = localStorage.getItem("jwt-token");
-    const response = await fetch(
-      "http://localhost:3000/api/payment/upload",
-      {
-        method: "POST",
-        headers: {
-          authorization: `Bearer ${token}`,
+    try {
+      const token = localStorage.getItem("jwt-token");
+      const response = await fetch(
+        "https://car-rental-v2-sand.vercel.app/api/payment/upload",
+        {
+          method: "POST",
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+          body: formData,
         },
-        body: formData,
+      );
+
+      if (!response.ok) {
+        alert("Upload failed");
+        return;
       }
-    );
 
-    if (!response.ok) {
-      alert("Upload failed");
-      return;
+      alert("Payment proof uploaded successfully");
+
+      setShowPaymentPopup(false);
+      setPaymentImage(null);
+      setPaymentPreview(null);
+    } catch (error) {
+      console.error(error);
+      alert("Network error");
     }
-
-    alert("Payment proof uploaded successfully");
-
-    setShowPaymentPopup(false);
-    setPaymentImage(null);
-    setPaymentPreview(null);
-  } catch (error) {
-    console.error(error);
-    alert("Network error");
-  }
-};
-
+  };
 
   return (
     <>
@@ -265,8 +259,9 @@ const handleSubmitPayment = async () => {
         <a
           onClick={() => setHistory("pending")}
           className={`text-2xl font-medium transition-all hover:text-green-500 relative
-                  ${history === "pending" ? "text-green-500" : "text-gray-700"
-            } cursor-pointer select-none
+                  ${
+                    history === "pending" ? "text-green-500" : "text-gray-700"
+                  } cursor-pointer select-none
                   after:content-[''] after:absolute after:w-0 after:h-1 after:bg-green-500 
                   after:left-0 after:-bottom-1 after:transition-all hover:after:w-full
                   ${history === "pending" ? "after:w-full" : ""}`}
@@ -276,8 +271,9 @@ const handleSubmitPayment = async () => {
         <a
           onClick={() => setHistory("confirm")}
           className={`text-2xl font-medium transition-all hover:text-green-500 relative
-                  ${history === "confirm" ? "text-green-500" : "text-gray-700"
-            } cursor-pointer select-none
+                  ${
+                    history === "confirm" ? "text-green-500" : "text-gray-700"
+                  } cursor-pointer select-none
                   after:content-[''] after:absolute after:w-0 after:h-1 after:bg-green-500 
                   after:left-0 after:-bottom-1 after:transition-all hover:after:w-full
                   ${history === "confirm" ? "after:w-full" : ""}`}
@@ -287,8 +283,9 @@ const handleSubmitPayment = async () => {
         <a
           onClick={() => setHistory("history")}
           className={`text-2xl font-medium transition-all hover:text-green-500 relative
-                  ${history === "history" ? "text-green-500" : "text-gray-700"
-            } cursor-pointer select-none
+                  ${
+                    history === "history" ? "text-green-500" : "text-gray-700"
+                  } cursor-pointer select-none
                   after:content-[''] after:absolute after:w-0 after:h-1 after:bg-green-500 
                   after:left-0 after:-bottom-1 after:transition-all hover:after:w-full
                   ${history === "history" ? "after:w-full" : ""}`}
@@ -298,8 +295,9 @@ const handleSubmitPayment = async () => {
         <a
           onClick={() => setHistory("rejected")}
           className={`text-2xl font-medium transition-all hover:text-green-500 relative
-                  ${history === "rejected" ? "text-green-500" : "text-gray-700"
-            } cursor-pointer select-none
+                  ${
+                    history === "rejected" ? "text-green-500" : "text-gray-700"
+                  } cursor-pointer select-none
                   after:content-[''] after:absolute after:w-0 after:h-1 after:bg-green-500 
                   after:left-0 after:-bottom-1 after:transition-all hover:after:w-full
                   ${history === "rejected" ? "after:w-full" : ""}`}
@@ -310,7 +308,6 @@ const handleSubmitPayment = async () => {
       {history && history === "pending" ? (
         Array.isArray(pending) && pending.length > 0 ? (
           pending.map((item) => (
-
             <div
               key={item.R_ID}
               className="mt-6 mb-4 w-[96%] mx-auto bg-white border border-gray-300 rounded-lg shadow-md overflow-hidden flex"
@@ -364,30 +361,34 @@ const handleSubmitPayment = async () => {
                   <p>
                     <strong>Total Payment:</strong> {item.total_Payment} Birr
                   </p>
-                  {item.D_ID === null ?
+                  {item.D_ID === null ? (
                     <p>
                       <strong>Driver: </strong> No
-                    </p> : (
-                      <p>
-                        <strong>Driver: </strong> {item.driverDetail.full_name}
-                      </p>
-                    )}
-                  {item.D_ID === null ? "" : (
+                    </p>
+                  ) : (
                     <p>
-                      <strong>Driver Phone Number: </strong> {item.driverDetail.phone}
+                      <strong>Driver: </strong> {item.driverDetail.full_name}
+                    </p>
+                  )}
+                  {item.D_ID === null ? (
+                    ""
+                  ) : (
+                    <p>
+                      <strong>Driver Phone Number: </strong>{" "}
+                      {item.driverDetail.phone}
                     </p>
                   )}
                   <p>
                     <strong>Posted:</strong>{" "}
                     {new Date(item.Posting_Date).toLocaleDateString("en-CA")}
                   </p>
-                  
                 </div>
               </div>
               {/* RIGHT SIDE PRICE & BUTTON */}
               <div
-                className={`w-1/4 p-6 flex flex-col justify-between items-end ${item.Status == "pending" ? "bg-yellow-500" : "bg-green-500"
-                  }`}
+                className={`w-1/4 p-6 flex flex-col justify-between items-end ${
+                  item.Status == "pending" ? "bg-yellow-500" : "bg-green-500"
+                }`}
               >
                 <div className="text-right">
                   <p className="text-3xl font-bold text-gray-900">
@@ -400,11 +401,11 @@ const handleSubmitPayment = async () => {
                     Account Number
                   </p>
                   <p className="text-lg text-gray-700 -mt-1">
-                   CBE - 1000297982781
+                    CBE - 1000297982781
                   </p>
                 </div>
                 <div className="flex gap-3 items-center">
-                {doc && doc === true ? (
+                  {doc && doc === true ? (
                     <button
                       onClick={() => {
                         setSelectedReservation(item.R_ID);
@@ -414,26 +415,21 @@ const handleSubmitPayment = async () => {
                     >
                       Add Payment photo
                     </button>
+                  ) : (
+                    <a className="text-sm">
+                      Please add Digital ID before making any payment.
+                    </a>
+                  )}
 
-                
-                ): (
-                    <a
-                  className="text-sm"
-                >
-                  Please add Digital ID before making any payment.
-                </a>
-                )}
-
-                <button
-                  onClick={() => navigate(`/booking/update/${item.R_ID}`)}
-                  className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
-                >
-                  Edit
-                </button>
+                  <button
+                    onClick={() => navigate(`/booking/update/${item.R_ID}`)}
+                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+                  >
+                    Edit
+                  </button>
                 </div>
               </div>
             </div>
-
           ))
         ) : (
           <p className="text-lg mt-4">No pending reservation found.</p>
@@ -494,17 +490,21 @@ const handleSubmitPayment = async () => {
                   <p>
                     <strong>Total Payment:</strong> {item.total_Payment} Birr
                   </p>
-                  {item.D_ID === null ?
+                  {item.D_ID === null ? (
                     <p>
                       <strong>Driver: </strong> No
-                    </p> : (
-                      <p>
-                        <strong>Driver: </strong> {item.driverDetail.full_name}
-                      </p>
-                    )}
-                  {item.D_ID === null ? "" : (
+                    </p>
+                  ) : (
                     <p>
-                      <strong>Driver Phone Number: </strong> {item.driverDetail.phone}
+                      <strong>Driver: </strong> {item.driverDetail.full_name}
+                    </p>
+                  )}
+                  {item.D_ID === null ? (
+                    ""
+                  ) : (
+                    <p>
+                      <strong>Driver Phone Number: </strong>{" "}
+                      {item.driverDetail.phone}
                     </p>
                   )}
                   <p>
@@ -515,8 +515,9 @@ const handleSubmitPayment = async () => {
               </div>
               {/* RIGHT SIDE PRICE & BUTTON */}
               <div
-                className={`w-1/4 p-6 flex flex-col justify-between items-end ${item.Status == "pending" ? "bg-yellow-500" : "bg-green-500"
-                  }`}
+                className={`w-1/4 p-6 flex flex-col justify-between items-end ${
+                  item.Status == "pending" ? "bg-yellow-500" : "bg-green-500"
+                }`}
               >
                 <div className="text-right">
                   <p className="text-3xl font-bold text-gray-900">
@@ -534,7 +535,6 @@ const handleSubmitPayment = async () => {
                 </button>
               </div>
             </div>
-
           ))
         ) : (
           <p className="text-lg mt-4">No confirmed reservations found.</p>
@@ -542,7 +542,6 @@ const handleSubmitPayment = async () => {
       ) : history === "history" ? (
         Array.isArray(old) && old.length > 0 ? (
           old.map((item) => (
-
             <div
               key={item.V_ID}
               className="mt-6 mb-4 w-[96%] mx-auto bg-white border border-gray-300 rounded-lg shadow-md overflow-hidden flex"
@@ -585,23 +584,26 @@ const handleSubmitPayment = async () => {
                     <strong>Total Payment:</strong> {item.Total_paid} Birr
                   </p>
                   <p>
-                    <strong>Over payment:</strong> {item.over_payment || 0}{" "}
-                    birr
+                    <strong>Over payment:</strong> {item.over_payment || 0} birr
                   </p>
                   <p>
                     <strong>Refund:</strong> {item.Refund || 0} birr
                   </p>
-                  {item.D_ID === null ?
+                  {item.D_ID === null ? (
                     <p>
                       <strong>Driver: </strong> No
-                    </p> : (
-                      <p>
-                        <strong>Driver: </strong> {item.driverDetail.full_name}
-                      </p>
-                    )}
-                  {item.D_ID === null ? "" : (
+                    </p>
+                  ) : (
                     <p>
-                      <strong>Driver Phone Number: </strong> {item.driverDetail.phone}
+                      <strong>Driver: </strong> {item.driverDetail.full_name}
+                    </p>
+                  )}
+                  {item.D_ID === null ? (
+                    ""
+                  ) : (
+                    <p>
+                      <strong>Driver Phone Number: </strong>{" "}
+                      {item.driverDetail.phone}
                     </p>
                   )}
                 </div>
@@ -627,7 +629,6 @@ const handleSubmitPayment = async () => {
                 </button>
               </div>
             </div>
-
           ))
         ) : (
           <p className="text-lg mt-4">No reservation history found.</p>
@@ -635,7 +636,6 @@ const handleSubmitPayment = async () => {
       ) : history === "rejected" ? (
         Array.isArray(reject) && reject.length > 0 ? (
           reject.map((item) => (
-
             <div
               key={item.V_ID}
               className="mt-6 mb-4 w-[96%] mx-auto bg-white border border-gray-300 rounded-lg shadow-md overflow-hidden flex"
@@ -664,7 +664,10 @@ const handleSubmitPayment = async () => {
                 {/* DATE + STATUS INFO */}
                 <div className="mt-3 grid grid-cols-2 border-t pt-3 text-sm">
                   <p className="align center">
-                    <strong>Status:</strong> <span className="text-red-500"><strong>{item.Action_Type}</strong></span>
+                    <strong>Status:</strong>{" "}
+                    <span className="text-red-500">
+                      <strong>{item.Action_Type}</strong>
+                    </span>
                   </p>
                   <p>
                     <strong>Pickup:</strong>{" "}
@@ -681,23 +684,26 @@ const handleSubmitPayment = async () => {
                     <strong>Total Payment:</strong> {item.Total_Charge} Birr
                   </p>
                   <p>
-                    <strong>Over payment:</strong> {item.over_payment || 0}{" "}
-                    birr
+                    <strong>Over payment:</strong> {item.over_payment || 0} birr
                   </p>
                   <p>
                     <strong>Refund:</strong> {item.Refund || 0} birr
                   </p>
-                  {item.D_ID === null ?
+                  {item.D_ID === null ? (
                     <p>
                       <strong>Driver: </strong> No
-                    </p> : (
-                      <p>
-                        <strong>Driver: </strong> {item.driverDetail.full_name}
-                      </p>
-                    )}
-                  {item.D_ID === null ? "" : (
+                    </p>
+                  ) : (
                     <p>
-                      <strong>Driver Phone Number: </strong> {item.driverDetail.phone}
+                      <strong>Driver: </strong> {item.driverDetail.full_name}
+                    </p>
+                  )}
+                  {item.D_ID === null ? (
+                    ""
+                  ) : (
+                    <p>
+                      <strong>Driver Phone Number: </strong>{" "}
+                      {item.driverDetail.phone}
                     </p>
                   )}
                 </div>
@@ -717,23 +723,17 @@ const handleSubmitPayment = async () => {
                 </div>
               </div>
             </div>
-
           ))
         ) : (
           <p className="text-lg mt-4">No rejection history found.</p>
         )
       ) : (
-
         <p>There is no reservation</p>
-
       )}
       {showPaymentPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-[400px] relative">
-
-            <h2 className="text-xl font-semibold mb-4">
-              Upload Payment Proof
-            </h2>
+            <h2 className="text-xl font-semibold mb-4">Upload Payment Proof</h2>
 
             <input
               type="file"
@@ -772,15 +772,11 @@ const handleSubmitPayment = async () => {
                 Submit
               </button>
             </div>
-
           </div>
         </div>
       )}
-
     </>
-    
   );
-  
 };
 
 export default MyReservation;

@@ -1,47 +1,46 @@
-import { Edit, List } from 'lucide-react';
-import React ,{useEffect, useState} from 'react'
-import { useNavigate } from 'react-router-dom';
-
+import { Edit, List } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Users = () => {
-
-    const [userData, setUserData] = useState();
-  const [adminID, setAdminID] = useState()
+  const [userData, setUserData] = useState();
+  const [adminID, setAdminID] = useState();
   const navigate = useNavigate();
 
-    useEffect(()=>{
-
-          const fetchUser = async () => {
+  useEffect(() => {
+    const fetchUser = async () => {
       try {
-         const token = localStorage.getItem("jwt-token");
-         if(!token){
+        const token = localStorage.getItem("jwt-token");
+        if (!token) {
           navigate("/admin/login");
-          return
-         }
+          return;
+        }
         const responseVerify = await fetch(
-          "http://localhost:3000/api/admin/verify",
+          "https://car-rental-v2-sand.vercel.app/api/admin/verify",
           {
             method: "POST",
             headers: {
               "jwt-token": token,
             },
-          }
+          },
         );
 
         if (!responseVerify.ok) {
           navigate("/admin/login");
-          return
+          return;
         }
-        const adminData = await responseVerify.json()
-        
-          if(adminData.user.type != "admin"){
-                    // localStorage.removeItem("jwt-token")
-                    navigate(`/superadmin/manage-admins`)
-                }
+        const adminData = await responseVerify.json();
 
-       setAdminID(adminData.user.id)
+        if (adminData.user.type != "admin") {
+          // localStorage.removeItem("jwt-token")
+          navigate(`/superadmin/manage-admins`);
+        }
 
-        const response = await fetch(`http://localhost:3000/api/user/all`);
+        setAdminID(adminData.user.id);
+
+        const response = await fetch(
+          `https://car-rental-v2-sand.vercel.app/api/user/all`,
+        );
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -51,18 +50,15 @@ const Users = () => {
         const data = await response.json();
         setUserData(data);
         // console.log(data)
-
       } catch (e) {
         throw new Error(e);
       }
     };
-        
-    fetchUser()
 
-    },[])
+    fetchUser();
+  }, []);
 
- 
-     return (
+  return (
     <div className="p-8 bg-gray-100 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Vehicle List</h2>
@@ -99,10 +95,10 @@ const Users = () => {
                   </td>
                   <td className="py-2 px-4">{user.Email}</td>
                   <td className="py-2 px-4">{user.PhoneNumber}</td>
-                  <td className="py-2 px-4">{new Date(user.DoB).toLocaleDateString()}</td>
-                  <td className="py-2 px-4 text-center">
-                    {user.Nationality}
+                  <td className="py-2 px-4">
+                    {new Date(user.DoB).toLocaleDateString()}
                   </td>
+                  <td className="py-2 px-4 text-center">{user.Nationality}</td>
                   <td className="py-2 px-4 text-center">{user.City}</td>
                   <td className="py-2 px-4 text-orange-500 font-semibold">
                     {new Date(user.Register_Date).toLocaleDateString()}
@@ -112,9 +108,7 @@ const Users = () => {
                   <td className="py-2 px-4 text-center flex justify-center gap-2">
                     {/* Edit */}
                     <button
-                      onClick={() =>
-                        navigate(`/admin/user/${user.C_ID}`)
-                      }
+                      onClick={() => navigate(`/admin/user/${user.C_ID}`)}
                       className="flex items-center gap-1 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
                     >
                       <List size={16} />
@@ -128,6 +122,6 @@ const Users = () => {
       </div>
     </div>
   );
-}
+};
 
-export default Users
+export default Users;

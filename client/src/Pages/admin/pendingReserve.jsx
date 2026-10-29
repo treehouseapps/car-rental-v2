@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { FileStack, LoaderIcon } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import DocumentPreview from "./DocumentPreview"
+import DocumentPreview from "./DocumentPreview";
 
 const PendingReserve = () => {
   const navigate = useNavigate();
-  const [adminID, setAdminID] = useState()
+  const [adminID, setAdminID] = useState();
   const [pending, setPending] = useState([]);
   const [detail, setDetail] = useState(false);
   const [vehicle, setVehicle] = useState();
@@ -20,8 +20,6 @@ const PendingReserve = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentPhotoSrc, setPaymentPhotoSrc] = useState(null);
 
-
-
   useEffect(() => {
     const fetchAdmin = async () => {
       try {
@@ -31,13 +29,13 @@ const PendingReserve = () => {
           return;
         }
         const responseVerify = await fetch(
-          "http://localhost:3000/api/admin/verify",
+          "https://car-rental-v2-sand.vercel.app/api/admin/verify",
           {
             method: "POST",
             headers: {
               "jwt-token": token,
             },
-          }
+          },
         );
 
         if (!responseVerify.ok) {
@@ -49,13 +47,13 @@ const PendingReserve = () => {
 
         if (data.user.type != "admin") {
           // localStorage.removeItem("jwt-token")
-          navigate(`/superadmin/manage-admins`)
+          navigate(`/superadmin/manage-admins`);
         }
 
         setAdminID(data.user.id);
 
         const response = await fetch(
-          "http://localhost:3000/api/reservation/vehicle/pending"
+          "https://car-rental-v2-sand.vercel.app/api/reservation/vehicle/pending",
         );
         if (!response.ok) {
           const errorData = await response.json();
@@ -75,7 +73,7 @@ const PendingReserve = () => {
   const moreDetail = async ({ C_ID, V_ID }) => {
     try {
       const vehicleResponse = await fetch(
-        `http://localhost:3000/api/vehicle/${V_ID}`
+        `https://car-rental-v2-sand.vercel.app/api/vehicle/${V_ID}`,
       );
       if (!vehicleResponse.ok) {
         const errorData = await vehicleResponse.json();
@@ -85,7 +83,7 @@ const PendingReserve = () => {
       setVehicle(vehicleResult);
 
       const customerResponse = await fetch(
-        `http://localhost:3000/api/user/admin/${C_ID}`
+        `https://car-rental-v2-sand.vercel.app/api/user/admin/${C_ID}`,
       );
       if (!customerResponse.ok) {
         const errorData = await customerResponse.json();
@@ -103,10 +101,10 @@ const PendingReserve = () => {
   const confirmReserve = async ({ id, rid }) => {
     try {
       const ConfirmResponse = await fetch(
-        `http://localhost:3000/api/reservation/confirm/${id}/${rid}`,
+        `https://car-rental-v2-sand.vercel.app/api/reservation/confirm/${id}/${rid}`,
         {
           method: "PUT",
-        }
+        },
       );
 
       if (!ConfirmResponse.ok) {
@@ -116,9 +114,8 @@ const PendingReserve = () => {
       const confirmResult = await ConfirmResponse.json();
       alert(confirmResult.message);
     } catch (e) {
-      console.log("internal error")
+      console.log("internal error");
       // throw new Error(e.error);
-  
     }
     setDetail(false);
     setRefresh(!false);
@@ -126,10 +123,10 @@ const PendingReserve = () => {
   const rejectReserve = async ({ id, rid }) => {
     try {
       const RejectResponse = await fetch(
-        `http://localhost:3000/api/reservation/reject/${id}/${rid}`,
+        `https://car-rental-v2-sand.vercel.app/api/reservation/reject/${id}/${rid}`,
         {
           method: "PUT",
-        }
+        },
       );
 
       if (!RejectResponse.ok) {
@@ -173,8 +170,9 @@ const PendingReserve = () => {
               pending.map((r, index) => (
                 <tr
                   key={r.R_ID}
-                  className={`border-b hover:bg-gray-50 transition ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    }`}
+                  className={`border-b hover:bg-gray-50 transition ${
+                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                  }`}
                 >
                   <td className="py-2 px-4">{index + 1}</td>
                   <td className="py-2 px-4 font-medium text-gray-800">
@@ -183,7 +181,7 @@ const PendingReserve = () => {
                   <td className="py-2 px-4 font-medium text-gray-800">
                     {r.Posting_Date.slice(0, 10)}
                   </td>
-                  
+
                   <td className="py-2 px-4">
                     {new Date(r.Pickup_Date).toLocaleDateString("en-CA")}
                   </td>
@@ -194,7 +192,9 @@ const PendingReserve = () => {
                     {r.Driver_License ? (
                       <button
                         onClick={() => {
-                          setDriverLicenseSrc(`http://localhost:3000${r.Driver_License}`);
+                          setDriverLicenseSrc(
+                            `http://localhost:3000${r.Driver_License}`,
+                          );
                           setShowDriverLicenseModal(true);
                         }}
                         className="text-blue-600 border-blue-600 border rounded-md px-2 py-1 hover:bg-blue-200"
@@ -209,7 +209,9 @@ const PendingReserve = () => {
                     {r.Payment_Photo ? (
                       <button
                         onClick={() => {
-                          setPaymentPhotoSrc(`http://localhost:3000${r.Payment_Photo}`);
+                          setPaymentPhotoSrc(
+                            `http://localhost:3000${r.Payment_Photo}`,
+                          );
                           setShowPaymentModal(true);
                         }}
                         className="text-green-600 border border-green-600 rounded-md px-2 py-1 hover:bg-green-200"
@@ -220,8 +222,6 @@ const PendingReserve = () => {
                       <span className="text-gray-400">No Photo</span>
                     )}
                   </td>
-
-
 
                   <td className="py-2 px-4 text-center flex justify-center gap-2">
                     <button
@@ -260,7 +260,6 @@ const PendingReserve = () => {
         {showPaymentModal && paymentPhotoSrc && (
           <div className="fixed inset-0 z-50 bg-black bg-opacity-70 flex justify-center items-center">
             <div className="bg-white rounded-lg w-[80%] max-w-lg max-h-[80vh] overflow-auto p-4 relative">
-
               {/* Close Button */}
               <button
                 onClick={() => setShowPaymentModal(false)}
@@ -295,12 +294,9 @@ const PendingReserve = () => {
                   Close
                 </button>
               </div>
-
             </div>
           </div>
         )}
-
-
 
         {detail && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -334,23 +330,21 @@ const PendingReserve = () => {
                           {customer[0].City}{" "}
                         </p>
                         {customer && customer[0].Documents === null ? (
-
-                        <p className="bg-red-400 text-white rounded-md px-4 py-2 mt-4" >
-                          There is No Document
-                        </p>
-                        ):(
+                          <p className="bg-red-400 text-white rounded-md px-4 py-2 mt-4">
+                            There is No Document
+                          </p>
+                        ) : (
                           <button
-                          onClick={() => {
-                            const docs = JSON.parse(customer[0].Documents);
-                            setDocuments(docs);
-                            setShowDocs(true);
-                          }}
-                          className="bg-blue-600 text-white rounded-md px-4 py-2 mt-4 hover:bg-blue-700"
-                        >
-                          Review Documents
-                        </button>
+                            onClick={() => {
+                              const docs = JSON.parse(customer[0].Documents);
+                              setDocuments(docs);
+                              setShowDocs(true);
+                            }}
+                            className="bg-blue-600 text-white rounded-md px-4 py-2 mt-4 hover:bg-blue-700"
+                          >
+                            Review Documents
+                          </button>
                         )}
-
                       </>
                     )}
                   </div>
@@ -396,15 +390,12 @@ const PendingReserve = () => {
 
               <div className="flex justify-between space-x-3 pt-6">
                 <div>
-                  <p
-                    className="flex gap-2 px-4 py-2 text-gray-800 rounded-md"
-                  >
+                  <p className="flex gap-2 px-4 py-2 text-gray-800 rounded-md">
                     <LoaderIcon className="text-yellow-900" />
                     Pending
                   </p>
                 </div>
                 <div className="flex space-x-2">
-
                   <button
                     onClick={() => {
                       setDetail(false);
@@ -414,18 +405,18 @@ const PendingReserve = () => {
                     Cancel
                   </button>
                   {customer && customer[0].Documents == null ? (
-                     <p
-                    className={`px-4 py-2 bg-red-200  text-white rounded-md`}
-                  >
-                    Document Needed
-                  </p>
-                  ):(
-                  <button
-                    onClick={() => confirmReserve({ id: adminID, rid: rid })}
-                    className={`px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md`}
-                  >
-                    Approve
-                  </button>
+                    <p
+                      className={`px-4 py-2 bg-red-200  text-white rounded-md`}
+                    >
+                      Document Needed
+                    </p>
+                  ) : (
+                    <button
+                      onClick={() => confirmReserve({ id: adminID, rid: rid })}
+                      className={`px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md`}
+                    >
+                      Approve
+                    </button>
                   )}
                   <button
                     onClick={() => rejectReserve({ id: adminID, rid: rid })}
@@ -440,57 +431,53 @@ const PendingReserve = () => {
         )}
       </div>
       {showDocs && documents && (
-  <div className="fixed inset-0 z-50 bg-black bg-opacity-70 flex justify-center items-center">
-    <div className="bg-white rounded-lg w-[90%] max-h-[90vh] overflow-y-auto p-6">
-      
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Customer Documents</h2>
-        <button
-          onClick={() => setShowDocs(false)}
-          className="text-gray-600 hover:text-black text-lg"
-        >
-          ✕
-        </button>
-      </div>
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-70 flex justify-center items-center">
+          <div className="bg-white rounded-lg w-[90%] max-h-[90vh] overflow-y-auto p-6">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold">Customer Documents</h2>
+              <button
+                onClick={() => setShowDocs(false)}
+                className="text-gray-600 hover:text-black text-lg"
+              >
+                ✕
+              </button>
+            </div>
 
-      {/* Documents */}
-      <div className="space-y-10">
+            {/* Documents */}
+            <div className="space-y-10">
+              {documents.digital_id && (
+                <DocumentPreview
+                  title="Digital ID"
+                  src={`http://localhost:3000${documents.digital_id}`}
+                />
+              )}
 
-        {documents.digital_id && (
-          <DocumentPreview
-            title="Digital ID"
-            src={`http://localhost:3000${documents.digital_id}`}
-          />
-        )}
+              {documents.driver_license && (
+                <DocumentPreview
+                  title="Driver License"
+                  src={`http://localhost:3000${documents.driver_license}`}
+                />
+              )}
 
-        {documents.driver_license && (
-          <DocumentPreview
-            title="Driver License"
-            src={`http://localhost:3000${documents.driver_license}`}
-          />
-        )}
+              {documents.collateral_doc && (
+                <DocumentPreview
+                  title="Collateral Document"
+                  src={`http://localhost:3000${documents.collateral_doc}`}
+                />
+              )}
 
-        {documents.collateral_doc && (
-          <DocumentPreview
-            title="Collateral Document"
-            src={`http://localhost:3000${documents.collateral_doc}`}
-          />
-        )}
-
-        {documents.bank_check && (
-          <DocumentPreview
-            title="Bank Check"
-            src={`http://localhost:3000${documents.bank_check}`}
-          />
-        )}
-      </div>
+              {documents.bank_check && (
+                <DocumentPreview
+                  title="Bank Check"
+                  src={`http://localhost:3000${documents.bank_check}`}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-)}
-
-    </div>
-    
   );
 };
 

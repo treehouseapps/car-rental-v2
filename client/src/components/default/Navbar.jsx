@@ -18,63 +18,63 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const [userData, setUserData] = useState();
-  const [doc , setDoc] = useState()
+  const [doc, setDoc] = useState();
 
-  useEffect(
-    () => {
-      const fetchUser = async () => {
-        {
-          const token = localStorage.getItem("jwt-token");
-          try {
-            const response = await fetch("http://localhost:3000/api/user/verify",
-              {
-                method: "POST",
-                headers: {
-                  "jwt-token": token,
-                },
-              });
+  useEffect(() => {
+    const fetchUser = async () => {
+      {
+        const token = localStorage.getItem("jwt-token");
+        try {
+          const response = await fetch(
+            "https://car-rental-v2-sand.vercel.app/api/user/verify",
+            {
+              method: "POST",
+              headers: {
+                "jwt-token": token,
+              },
+            },
+          );
 
-            if(!response.ok){
+          if (!response.ok) {
             // console.log("Token Invalid")
-            return
-            }
-            
-            const result = await response.json()
-            setUserData(result)
-           const check =  await fetch(`http://localhost:3000/api/user/document/check/${result.id}`)
-            
-           const checkComplete = await check.json()
-            setDoc(checkComplete.doc)
-            // console.log(result)
-
-          } catch (e) {
-            // throw new Error(e)
+            return;
           }
+
+          const result = await response.json();
+          setUserData(result);
+          const check = await fetch(
+            `https://car-rental-v2-sand.vercel.app/api/user/document/check/${result.id}`,
+          );
+
+          const checkComplete = await check.json();
+          setDoc(checkComplete.doc);
+          // console.log(result)
+        } catch (e) {
+          // throw new Error(e)
         }
-      };
-      fetchUser();
-    },[]);
+      }
+    };
+    fetchUser();
+  }, []);
 
   const handleLogout = async () => {
     try {
       setIsOpen(false);
       setDropdownOpen(false);
-      localStorage.removeItem("jwt-token")
-      setUserData(null)
+      localStorage.removeItem("jwt-token");
+      setUserData(null);
       navigate("/");
-
     } catch (error) {
       console.error("Logout error:", error);
     }
   };
 
-  const dropdown = ()=>{
-      setDropdownOpen(prev => !prev)
-      setTimeout(()=>{
-      setDropdownOpen(prev => !prev)
-      },3000)
-
-  }
+  const dropdown = () => {
+    setDropdownOpen((prev) => !prev);
+    setTimeout(() => {
+      setDropdownOpen((prev) => !prev);
+    }, 3000);
+  };
 
   const isLinkActive = (path) => location.pathname === path;
 
@@ -86,7 +86,6 @@ const Navbar = () => {
     { path: "/team", label: "Our Team" },
     { path: "/contact", label: "Contact" },
   ];
-
 
   return (
     <motion.nav
@@ -106,8 +105,9 @@ const Navbar = () => {
             className="flex items-center space-x-2 text-2xl font-bold group"
           >
             <Car className="w-8 h-8 text-green-900 transform group-hover:scale-110 transition-transform" />
-            <span className="text-3xl bg-gradient-to-r from-green-600 via-yellow-600 to-red-600 text-transparent bg-clip-text">SAMI 
-            <span className="">{" "}Car Rental</span>
+            <span className="text-3xl bg-gradient-to-r from-green-600 via-yellow-600 to-red-600 text-transparent bg-clip-text">
+              SAMI
+              <span className=""> Car Rental</span>
             </span>
           </Link>
 
@@ -119,9 +119,7 @@ const Navbar = () => {
                 to={item.path}
                 className={`text-sm font-medium transition-all hover:text-green-500 relative
                   ${
-                    isLinkActive(item.path)
-                      ? "text-green-500"
-                      : "text-gray-700"
+                    isLinkActive(item.path) ? "text-green-500" : "text-gray-700"
                   }
                   after:content-[''] after:absolute after:w-0 after:h-0.5 after:bg-green-500 
                   after:left-0 after:-bottom-1 after:transition-all hover:after:w-full
@@ -157,12 +155,10 @@ const Navbar = () => {
                         exit={{ opacity: 0, y: 10 }}
                         className="absolute right-0 mt-2 w-60 bg-white rounded-lg shadow-lg py-2 border border-gray-100"
                       >
-                         <p
-                          className="w-full px-4 py-2 text-left text-white bg-green-500 rounded-md flex items-center space-x-2"
-                        >
+                        <p className="w-full px-4 py-2 text-left text-white bg-green-500 rounded-md flex items-center space-x-2">
                           <span>{userData.name}</span>
                         </p>
-                         <Link
+                        <Link
                           className="w-full px-4 py-2 text-left text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors flex items-center space-x-2"
                           to={`/myreservation/${userData.id}`}
                         >
@@ -174,22 +170,17 @@ const Navbar = () => {
                         >
                           <span>Profile</span>
                         </Link>
-                        { doc == true ? (
-                           <a
-                          className="w-full px-4 py-2 text-left text-gray-700 flex items-center space-x-2"
-                          
-                        >
-                          <Check /> <span>Digital ID</span>
-                        </a>
+                        {doc == true ? (
+                          <a className="w-full px-4 py-2 text-left text-gray-700 flex items-center space-x-2">
+                            <Check /> <span>Digital ID</span>
+                          </a>
                         ) : (
-                         <Link
-                          className="w-full px-4 py-2 text-left text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors flex items-center space-x-2"
-                          to={`/verifyid/${userData.id}`}
-                        >
-                          
-                          <span>upload Digital ID</span>
-                        </Link>
-                          
+                          <Link
+                            className="w-full px-4 py-2 text-left text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors flex items-center space-x-2"
+                            to={`/verifyid/${userData.id}`}
+                          >
+                            <span>upload Digital ID</span>
+                          </Link>
                         )}
 
                         <button
@@ -268,19 +259,17 @@ const Navbar = () => {
                 <div className="flex flex-col space-y-2 pt-4 border-t">
                   {userData ? (
                     <>
-                     <button
-                      className="flex items-center justify-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      <span>{userData.name}</span>
-                    </button>
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center justify-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      <span>Logout</span>
-                    </button>
+                      <button className="flex items-center justify-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all">
+                        <LogOut className="w-4 h-4" />
+                        <span>{userData.name}</span>
+                      </button>
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center justify-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>Logout</span>
+                      </button>
                     </>
                   ) : (
                     <>

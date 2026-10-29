@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import emailjs from "emailjs-com";
 
 const ForgotPassword = ({ onClose }) => {
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -12,19 +12,18 @@ const ForgotPassword = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setMessage('');
+    setMessage("");
     setIsError(false);
 
     try {
-
       const res = await fetch(
-        "http://localhost:3000/api/auth/forgot-password",
+        "https://car-rental-v2-sand.vercel.app/api/auth/forgot-password",
         {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ email: email.trim() })
-        }
-      )
+          body: JSON.stringify({ email: email.trim() }),
+        },
+      );
       const response = await res.json();
 
       if (!response.token) {
@@ -42,13 +41,11 @@ const ForgotPassword = ({ onClose }) => {
           email: email,
           link: resetLink,
         },
-        "ij6znEh0E_12jo44a"
+        "ij6znEh0E_12jo44a",
         // import.meta.env.VITE_EMAILJS_PUBLIC_KEY
       );
 
-
-
-      setMessage('Password reset link has been sent.');
+      setMessage("Password reset link has been sent.");
       setIsError(false);
       setTimeout(() => {
         onClose();
@@ -56,7 +53,7 @@ const ForgotPassword = ({ onClose }) => {
     } catch (error) {
       console.error("EmailJS Error:", error);
       setIsError(true);
-      setMessage(error.message || 'An error occurred. Please try again later.');
+      setMessage(error.message || "An error occurred. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -80,8 +77,8 @@ const ForgotPassword = ({ onClose }) => {
             <div
               style={{
                 ...styles.message,
-                backgroundColor: isError ? '#ffebee' : '#e8f5e9',
-                color: isError ? '#c62828' : '#2e7d32'
+                backgroundColor: isError ? "#ffebee" : "#e8f5e9",
+                color: isError ? "#c62828" : "#2e7d32",
               }}
             >
               {message}
@@ -101,10 +98,10 @@ const ForgotPassword = ({ onClose }) => {
               disabled={isLoading}
               style={{
                 ...styles.submitButton,
-                opacity: isLoading ? 0.7 : 1
+                opacity: isLoading ? 0.7 : 1,
               }}
             >
-              {isLoading ? 'Processing...' : 'Reset Password'}
+              {isLoading ? "Processing..." : "Reset Password"}
             </button>
           </div>
         </form>
@@ -115,70 +112,70 @@ const ForgotPassword = ({ onClose }) => {
 
 const styles = {
   overlay: {
-    position: 'fixed',
+    position: "fixed",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1000,
   },
   modal: {
-    backgroundColor: 'white',
-    padding: '20px',
-    borderRadius: '8px',
-    width: '90%',
-    maxWidth: '400px',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+    backgroundColor: "white",
+    padding: "20px",
+    borderRadius: "8px",
+    width: "90%",
+    maxWidth: "400px",
+    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
   },
   title: {
-    marginBottom: '20px',
-    fontSize: '24px',
-    textAlign: 'center'
+    marginBottom: "20px",
+    fontSize: "24px",
+    textAlign: "center",
   },
   form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px'
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px",
   },
   input: {
-    padding: '10px',
-    fontSize: '16px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
+    padding: "10px",
+    fontSize: "16px",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
   },
   buttonContainer: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: '10px',
-    marginTop: '10px'
+    display: "flex",
+    justifyContent: "flex-end",
+    gap: "10px",
+    marginTop: "10px",
   },
   cancelButton: {
-    padding: '8px 16px',
-    fontSize: '14px',
-    border: 'none',
-    backgroundColor: '#f5f5f5',
-    color: '#333',
-    borderRadius: '4px',
-    cursor: 'pointer'
+    padding: "8px 16px",
+    fontSize: "14px",
+    border: "none",
+    backgroundColor: "#f5f5f5",
+    color: "#333",
+    borderRadius: "4px",
+    cursor: "pointer",
   },
   submitButton: {
-    padding: '8px 16px',
-    fontSize: '14px',
-    border: 'none',
-    backgroundColor: '#007BFF',
-    color: 'white',
-    borderRadius: '4px',
-    cursor: 'pointer'
+    padding: "8px 16px",
+    fontSize: "14px",
+    border: "none",
+    backgroundColor: "#007BFF",
+    color: "white",
+    borderRadius: "4px",
+    cursor: "pointer",
   },
   message: {
-    padding: '10px',
-    borderRadius: '4px',
-    textAlign: 'center'
-  }
+    padding: "10px",
+    borderRadius: "4px",
+    textAlign: "center",
+  },
 };
 
 export default ForgotPassword;

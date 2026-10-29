@@ -47,7 +47,7 @@ const Register = () => {
         const token = localStorage.getItem("jwt-token");
 
         const responseVerify = await fetch(
-          "http://localhost:3000/api/user/verify",
+          "https://car-rental-v2-sand.vercel.app/api/user/verify",
           {
             method: "POST",
             headers: {
@@ -151,11 +151,14 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/user/register", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "https://car-rental-v2-sand.vercel.app/api/user/register",
+        {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(formData),
+        },
+      );
 
       const data = await response.json();
 

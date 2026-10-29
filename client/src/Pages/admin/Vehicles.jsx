@@ -5,45 +5,47 @@ import AdminNavBar from "../../components/default/AdminNavBar";
 
 const AdminVehicle = () => {
   const [adminData, setAdminData] = useState();
-  const [adminID, setAdminID] = useState()
+  const [adminID, setAdminID] = useState();
   const [allVehicle, setAllVehicle] = useState([]);
   const [deltePopUp, setDeletePopUp] = useState(false);
-  const [targetID , setTargetID] = useState(null)
+  const [targetID, setTargetID] = useState(null);
   const [error, SetError] = useState();
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAdmin = async () => {
       try {
-         const token = localStorage.getItem("jwt-token");
-         if(!token){
+        const token = localStorage.getItem("jwt-token");
+        if (!token) {
           navigate("/admin/login");
-          return
-         }
+          return;
+        }
         const responseVerify = await fetch(
-          "http://localhost:3000/api/admin/verify",
+          "https://car-rental-v2-sand.vercel.app/api/admin/verify",
           {
             method: "POST",
             headers: {
               "jwt-token": token,
             },
-          }
+          },
         );
 
         if (!responseVerify.ok) {
           navigate("/admin/login");
-          return
+          return;
         }
-        const adminData = await responseVerify.json()
-        
-          if(adminData.user.type != "admin"){
-                    // localStorage.removeItem("jwt-token")
-                    navigate(`/superadmin/manage-admins`)
-                }
+        const adminData = await responseVerify.json();
 
-       setAdminID(adminData.user.id)
+        if (adminData.user.type != "admin") {
+          // localStorage.removeItem("jwt-token")
+          navigate(`/superadmin/manage-admins`);
+        }
 
-        const response = await fetch(`http://localhost:3000/api/admin/${adminData.user.id}`);
+        setAdminID(adminData.user.id);
+
+        const response = await fetch(
+          `https://car-rental-v2-sand.vercel.app/api/admin/${adminData.user.id}`,
+        );
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -54,7 +56,9 @@ const AdminVehicle = () => {
         setAdminData(data);
         // console.log(data)
 
-        const allVehicle = await fetch(`http://localhost:3000/api/vehicles`);
+        const allVehicle = await fetch(
+          `https://car-rental-v2-sand.vercel.app/api/vehicles`,
+        );
 
         if (!allVehicle.ok) {
           const errorData = await allVehicle.json();
@@ -70,37 +74,39 @@ const AdminVehicle = () => {
   }, [deltePopUp]);
 
   const handleDelete = async (V_ID) => {
-    setDeletePopUp(true)
-    setTargetID(V_ID)
+    setDeletePopUp(true);
+    setTargetID(V_ID);
   };
 
-  const cancelDelete = ()=>{
-    setDeletePopUp(false)
-  }
-  const confirmDelete =async ()=>{
-    try{
-      const responseDelete = await fetch(`http://localhost:3000/api/admin/vehicle/delete/${targetID}`,{
-        method : "DELETE",
-         headers: {
+  const cancelDelete = () => {
+    setDeletePopUp(false);
+  };
+  const confirmDelete = async () => {
+    try {
+      const responseDelete = await fetch(
+        `https://car-rental-v2-sand.vercel.app/api/admin/vehicle/delete/${targetID}`,
+        {
+          method: "DELETE",
+          headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ adminID }),
-      })
-      if(!responseDelete.ok){
+        },
+      );
+      if (!responseDelete.ok) {
         const errorData = await responseDelete.json();
-          throw new Error(errorData);
+        throw new Error(errorData);
       }
 
-      const deleteData = await responseDelete.json()
+      const deleteData = await responseDelete.json();
       // console.log(deleteData.message)
       // console.log(deleteData)
 
-          setDeletePopUp(false)
-
-    }catch(e){
-      throw new Error(e)
+      setDeletePopUp(false);
+    } catch (e) {
+      throw new Error(e);
     }
-  }
+  };
   return (
     <div className="p-8 bg-gray-100 min-h-screen">
       <div className="flex justify-between items-center mb-6">
@@ -177,39 +183,38 @@ const AdminVehicle = () => {
                       <Trash2 size={16} />
                       <span>Delete</span>
                     </button>
-                    
                   </td>
                 </tr>
               ))}
           </tbody>
         </table>
         {deltePopUp && (
-                      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                        <div className="bg-white rounded-lg shadow-lg p-6 w-80">
-                          <h2 className="text-lg font-semibold mb-4 text-gray-800">
-                            Confirm Deletion
-                          </h2>
-                          <p className="text-gray-600 mb-6">
-                            Are you sure you want to delete this item? This
-                            action cannot be undone. 
-                          </p>
-                          <div className="flex justify-end space-x-3">
-                            <button
-                              onClick={cancelDelete}
-                              className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-md"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onClick={confirmDelete}
-                              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
-                            >
-                              Yes, Delete
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+              <h2 className="text-lg font-semibold mb-4 text-gray-800">
+                Confirm Deletion
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Are you sure you want to delete this item? This action cannot be
+                undone.
+              </p>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={cancelDelete}
+                  className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
+                >
+                  Yes, Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

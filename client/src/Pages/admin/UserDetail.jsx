@@ -20,17 +20,22 @@ const UserDetail = () => {
         const token = localStorage.getItem("jwt-token");
         if (!token) return navigate("/admin/login");
 
-        const verify = await fetch("http://localhost:3000/api/admin/verify", {
-          method: "POST",
-          headers: { "jwt-token": token },
-        });
+        const verify = await fetch(
+          "https://car-rental-v2-sand.vercel.app/api/admin/verify",
+          {
+            method: "POST",
+            headers: { "jwt-token": token },
+          },
+        );
 
         if (!verify.ok) {
           localStorage.removeItem("jwt-token");
           return navigate("/admin/login");
         }
 
-        const res = await fetch(`http://localhost:3000/api/user/detail/${id}`);
+        const res = await fetch(
+          `https://car-rental-v2-sand.vercel.app/api/user/detail/${id}`,
+        );
         const data = await res.json();
 
         // console.log(data)
@@ -51,7 +56,6 @@ const UserDetail = () => {
   const printReservation = (r) => {
     AdminPrintReservation(r);
   };
-
 
   if (loading) return <div className="p-6">Loading...</div>;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
@@ -77,8 +81,8 @@ const UserDetail = () => {
             {tab === "current"
               ? "Current Reservations"
               : tab === "history"
-              ? "Reservation Logs"
-              : "User Profile"}
+                ? "Reservation Logs"
+                : "User Profile"}
           </button>
         ))}
       </div>
@@ -104,11 +108,15 @@ const UserDetail = () => {
               {userReservedH.map((r) => (
                 <tr key={r.R_ID}>
                   <td className="p-3">{r.R_ID}</td>
-                
-                  <td className="p-3">{r.adminName|| "..."}</td>
+
+                  <td className="p-3">{r.adminName || "..."}</td>
                   <td className="p-3">{r.Status}</td>
-                  <td className="p-3">{new Date(r.Pickup_Date).toLocaleDateString()}</td>
-                  <td className="p-3">{new Date(r.Return_Date).toLocaleDateString()}</td>
+                  <td className="p-3">
+                    {new Date(r.Pickup_Date).toLocaleDateString()}
+                  </td>
+                  <td className="p-3">
+                    {new Date(r.Return_Date).toLocaleDateString()}
+                  </td>
                   <td className="p-3">{r.Rent_Day}</td>
                   <td className="p-3 font-semibold">{r.total_Payment} birr</td>
                   <td className="p-3 font-semibold">{r.Tax_Amount} birr</td>
@@ -131,17 +139,17 @@ const UserDetail = () => {
       {activeTab === "history" && (
         <div className="bg-white rounded shadow p-4 print-area">
           <div className="flex justify-end mb-4 print:hidden">
-           <button
-            onClick={() =>
-              PrintLog(usersLog, {
-                FullName: userData[0].FullName,
-                Email: userData[0].Email,
-              })
-            }
-            className="bg-blue-700 text-white py-2 px-3 rounded-md" 
-          >
-            Print Logs PDF
-          </button>
+            <button
+              onClick={() =>
+                PrintLog(usersLog, {
+                  FullName: userData[0].FullName,
+                  Email: userData[0].Email,
+                })
+              }
+              className="bg-blue-700 text-white py-2 px-3 rounded-md"
+            >
+              Print Logs PDF
+            </button>
           </div>
 
           {/* PRINT HEADER */}
@@ -210,7 +218,9 @@ const UserDetail = () => {
                   </td>
 
                   <td className="p-3 text-green-600">
-                    {l.Overpayment ? Number(l.Overpayment).toLocaleString() : "—"}
+                    {l.Overpayment
+                      ? Number(l.Overpayment).toLocaleString()
+                      : "—"}
                   </td>
 
                   <td className="p-3 text-red-600">
@@ -225,82 +235,90 @@ const UserDetail = () => {
                 </tr>
               ))}
             </tbody>
-
           </table>
         </div>
       )}
 
       {/* ================= USER PROFILE ================= */}
       {activeTab === "profile" && userData && (
-  <div className="bg-white rounded shadow p-8 space-y-6">
-    <h2 className="text-2xl font-bold mb-6">User Profile</h2>
+        <div className="bg-white rounded shadow p-8 space-y-6">
+          <h2 className="text-2xl font-bold mb-6">User Profile</h2>
 
-    {/* USER BASIC INFO */}
-    <div className="grid grid-cols-2 gap-8 text-sm">
-      <div>
-        <p className="font-medium text-gray-700">Full Name</p>
-        <p className="text-gray-900">{userData[0].FullName}</p>
-      </div>
-      <div>
-        <p className="font-medium text-gray-700">Email</p>
-        <p className="text-gray-900">{userData[0].Email}</p>
-      </div>
-      <div>
-        <p className="font-medium text-gray-700">Phone Number</p>
-        <p className="text-gray-900">{userData[0].PhoneNumber}</p>
-      </div>
-      <div>
-        <p className="font-medium text-gray-700">Date of Birth</p>
-        <p className="text-gray-900">{new Date(userData[0].DoB).toLocaleDateString()}</p>
-      </div>
-      <div>
-        <p className="font-medium text-gray-700">Nationality</p>
-        <p className="text-gray-900">{userData[0].Nationality}</p>
-      </div>
-      <div>
-        <p className="font-medium text-gray-700">City</p>
-        <p className="text-gray-900">{userData[0].City}</p>
-      </div>
-      <div>
-        <p className="font-medium text-gray-700">Register Date</p>
-        <p className="text-gray-900">{new Date(userData[0].Register_Date).toLocaleDateString()}</p>
-      </div>
-      <div>
-        <p className="font-medium text-gray-700">Last Updated</p>
-        <p className="text-gray-900">{userData[0].Update_Date}</p>
-      </div>
-    </div>
+          {/* USER BASIC INFO */}
+          <div className="grid grid-cols-2 gap-8 text-sm">
+            <div>
+              <p className="font-medium text-gray-700">Full Name</p>
+              <p className="text-gray-900">{userData[0].FullName}</p>
+            </div>
+            <div>
+              <p className="font-medium text-gray-700">Email</p>
+              <p className="text-gray-900">{userData[0].Email}</p>
+            </div>
+            <div>
+              <p className="font-medium text-gray-700">Phone Number</p>
+              <p className="text-gray-900">{userData[0].PhoneNumber}</p>
+            </div>
+            <div>
+              <p className="font-medium text-gray-700">Date of Birth</p>
+              <p className="text-gray-900">
+                {new Date(userData[0].DoB).toLocaleDateString()}
+              </p>
+            </div>
+            <div>
+              <p className="font-medium text-gray-700">Nationality</p>
+              <p className="text-gray-900">{userData[0].Nationality}</p>
+            </div>
+            <div>
+              <p className="font-medium text-gray-700">City</p>
+              <p className="text-gray-900">{userData[0].City}</p>
+            </div>
+            <div>
+              <p className="font-medium text-gray-700">Register Date</p>
+              <p className="text-gray-900">
+                {new Date(userData[0].Register_Date).toLocaleDateString()}
+              </p>
+            </div>
+            <div>
+              <p className="font-medium text-gray-700">Last Updated</p>
+              <p className="text-gray-900">{userData[0].Update_Date}</p>
+            </div>
+          </div>
 
-    {/* USER DOCUMENTS */}
-    <div>
-      <h3 className="text-xl font-semibold mb-4">Documents</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {userData[0].Documents
-          ? Object.entries(JSON.parse(userData[0].Documents)).map(([key, value]) => (
-              <div
-                key={key}
-                className="bg-gray-100 rounded shadow p-4 flex flex-col items-center"
-              >
-                <p className="text-gray-700 font-medium mb-2 capitalize">{key.replace("_", " ")}</p>
-                {value ? (
-                  <img
-                    src={`http://localhost:3000${value}`}
-                    alt={key}
-                    className="h-48 w-full object-contain rounded border"
-                  />
-                ) : (
-                  <div className="h-48 w-full flex items-center justify-center bg-gray-200 text-gray-500 rounded">
-                    No Document
-                  </div>
-                )}
-              </div>
-            ))
-          : <p className="text-gray-500">No documents uploaded</p>}
-      </div>
-    </div>
-  </div>
-)}
-
+          {/* USER DOCUMENTS */}
+          <div>
+            <h3 className="text-xl font-semibold mb-4">Documents</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {userData[0].Documents ? (
+                Object.entries(JSON.parse(userData[0].Documents)).map(
+                  ([key, value]) => (
+                    <div
+                      key={key}
+                      className="bg-gray-100 rounded shadow p-4 flex flex-col items-center"
+                    >
+                      <p className="text-gray-700 font-medium mb-2 capitalize">
+                        {key.replace("_", " ")}
+                      </p>
+                      {value ? (
+                        <img
+                          src={`http://localhost:3000${value}`}
+                          alt={key}
+                          className="h-48 w-full object-contain rounded border"
+                        />
+                      ) : (
+                        <div className="h-48 w-full flex items-center justify-center bg-gray-200 text-gray-500 rounded">
+                          No Document
+                        </div>
+                      )}
+                    </div>
+                  ),
+                )
+              ) : (
+                <p className="text-gray-500">No documents uploaded</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

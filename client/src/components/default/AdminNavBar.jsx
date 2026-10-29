@@ -18,10 +18,13 @@ const AdminNavBar = () => {
     const verify = async () => {
       try {
         const token = localStorage.getItem("jwt-token");
-        const res = await fetch("http://localhost:3000/api/admin/verify", {
-          method: "POST",
-          headers: { "jwt-token": token },
-        });
+        const res = await fetch(
+          "https://car-rental-v2-sand.vercel.app/api/admin/verify",
+          {
+            method: "POST",
+            headers: { "jwt-token": token },
+          },
+        );
 
         if (!res.ok) {
           navigate("/admin/login");
@@ -58,11 +61,11 @@ const AdminNavBar = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:3000/api/admin/advanced/search?type=${searchType}&value=${searchValue}`
+        `https://car-rental-v2-sand.vercel.app/api/admin/advanced/search?type=${searchType}&value=${searchValue}`,
       );
 
       const data = await res.json();
-      
+
       setResults(data);
     } catch (err) {
       console.error(err);
@@ -190,7 +193,7 @@ const AdminNavBar = () => {
               </button>
             </div>
 
-           {/* RESULTS */}
+            {/* RESULTS */}
             <div className="space-y-2">
               {!loading && results.length === 0 && (
                 <p className="text-sm text-gray-500">No results found</p>
@@ -208,8 +211,10 @@ const AdminNavBar = () => {
                   </div>
 
                   <button
-                    onClick={() =>{ setShowSearch(false)
-                     navigate(`/admin/user/${item.C_ID}`)}}
+                    onClick={() => {
+                      setShowSearch(false);
+                      navigate(`/admin/user/${item.C_ID}`);
+                    }}
                     className="bg-gray-800 text-white px-4 py-1 text-sm rounded hover:bg-gray-900 transition"
                   >
                     Details
@@ -217,8 +222,6 @@ const AdminNavBar = () => {
                 </div>
               ))}
             </div>
-
-
           </div>
         </div>
       )}

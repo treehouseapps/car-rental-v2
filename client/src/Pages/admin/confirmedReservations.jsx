@@ -5,7 +5,7 @@ import AdminConfirmedPrint from "../../components/printPDF/AdminConfirmedPrint";
 
 const ConfirmedReservations = () => {
   const { id } = useParams();
-  const [adminID, setAdminID] = useState()
+  const [adminID, setAdminID] = useState();
   const [pending, setPending] = useState([]);
   const [detail, setDetail] = useState(false);
   const [vehicle, setVehicle] = useState();
@@ -15,36 +15,34 @@ const ConfirmedReservations = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-
       const token = localStorage.getItem("jwt-token");
 
-        const responseVerify = await fetch(
-          "http://localhost:3000/api/admin/verify",
-          {
-            method: "POST",
-            headers: {
-              "jwt-token": token,
-            },
-          }
-        );
+      const responseVerify = await fetch(
+        "https://car-rental-v2-sand.vercel.app/api/admin/verify",
+        {
+          method: "POST",
+          headers: {
+            "jwt-token": token,
+          },
+        },
+      );
 
-        if (!responseVerify.ok) {
-          localStorage.removeItem("jwt-token");
-          navigate("/admin/login");
-          return;
-        }
-        const data = await responseVerify.json();
+      if (!responseVerify.ok) {
+        localStorage.removeItem("jwt-token");
+        navigate("/admin/login");
+        return;
+      }
+      const data = await responseVerify.json();
 
-        
-          if(data.user.type != "admin"){
-                    // localStorage.removeItem("jwt-token")
-                    navigate(`/superadmin/manage-admins`)
-                }
+      if (data.user.type != "admin") {
+        // localStorage.removeItem("jwt-token")
+        navigate(`/superadmin/manage-admins`);
+      }
 
-        setAdminID(data.user.id);
+      setAdminID(data.user.id);
 
       const response = await fetch(
-        "http://localhost:3000/api/reservation/vehicle/confirmed"
+        "https://car-rental-v2-sand.vercel.app/api/reservation/vehicle/confirmed",
       );
       if (!response.ok) {
         const errorData = await response.json();
@@ -60,7 +58,7 @@ const ConfirmedReservations = () => {
   const moreDetail = async ({ C_ID, V_ID }) => {
     try {
       const vehicleResponse = await fetch(
-        `http://localhost:3000/api/vehicle/${V_ID}`
+        `https://car-rental-v2-sand.vercel.app/api/vehicle/${V_ID}`,
       );
       if (!vehicleResponse.ok) {
         const errorData = await vehicleResponse.json();
@@ -70,7 +68,7 @@ const ConfirmedReservations = () => {
       setVehicle(vehicleResult);
 
       const customerResponse = await fetch(
-        `http://localhost:3000/api/user/admin/${C_ID}`
+        `https://car-rental-v2-sand.vercel.app/api/user/admin/${C_ID}`,
       );
       if (!customerResponse.ok) {
         const errorData = await customerResponse.json();
@@ -87,12 +85,12 @@ const ConfirmedReservations = () => {
   const vehicleReturned = async ({ id, rid }) => {
     try {
       const confirmResponse = await fetch(
-        `http://localhost:3000/api/reservation/done/${id}/${rid}`,
+        `https://car-rental-v2-sand.vercel.app/api/reservation/done/${id}/${rid}`,
         {
           method: "PUT",
-        }
-      )
-      
+        },
+      );
+
       setDetail(false);
       setRefresh(!false);
 
@@ -103,7 +101,7 @@ const ConfirmedReservations = () => {
       const confirmResult = await confirmResponse.json();
       // console.log(confirmResult)
       alert("The vehicle Available from now.");
-      AdminConfirmedPrint(confirmResult)
+      AdminConfirmedPrint(confirmResult);
     } catch (e) {
       throw new Error(e);
     }
@@ -252,9 +250,9 @@ const ConfirmedReservations = () => {
                   </p>
                 </div>
                 <div className="flex space-x-2">
-                 <button
+                  <button
                     onClick={() => {
-                      vehicleReturned({ id: adminID, rid: rid })
+                      vehicleReturned({ id: adminID, rid: rid });
                     }}
                     className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-md"
                   >

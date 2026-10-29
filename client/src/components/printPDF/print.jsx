@@ -35,21 +35,26 @@ const print = async (result) => {
     // -----------------------------
     let driver;
     if (r.D_ID != null) {
-      driver = await fetch(`http://localhost:3000/api/superadmin/driver/${r.D_ID}`)
-        .then((data) => data.json());
+      driver = await fetch(
+        `https://car-rental-v2-sand.vercel.app/api/superadmin/driver/${r.D_ID}`,
+      ).then((data) => data.json());
     }
 
     // -----------------------------
     // FETCH VEHICLE
     // -----------------------------
-    const vehicleResponse = await fetch(`http://localhost:3000/api/vehicle/${r.V_ID}`);
+    const vehicleResponse = await fetch(
+      `https://car-rental-v2-sand.vercel.app/api/vehicle/${r.V_ID}`,
+    );
     const vehicleResult = await vehicleResponse.json();
     const vehicle = vehicleResult[0];
 
     // -----------------------------
     // FETCH CUSTOMER
     // -----------------------------
-    const customerResponse = await fetch(`http://localhost:3000/api/user/admin/${r.C_ID}`);
+    const customerResponse = await fetch(
+      `https://car-rental-v2-sand.vercel.app/api/user/admin/${r.C_ID}`,
+    );
     const customerResult = await customerResponse.json();
     const customer = customerResult[0];
 
@@ -68,9 +73,9 @@ const print = async (result) => {
     // -----------------------------
     const title = "SAMI Car Rental";
     const titleFontSize = 24;
-    const segment1 = title.slice(0, 4);   // "SAMI"
-    const segment2 = title.slice(4, 8);   // " Car"
-    const segment3 = title.slice(8);      // " Rental"
+    const segment1 = title.slice(0, 4); // "SAMI"
+    const segment2 = title.slice(4, 8); // " Car"
+    const segment3 = title.slice(8); // " Rental"
 
     const titleWidth1 = bold.widthOfTextAtSize(segment1, titleFontSize);
     const titleWidth2 = bold.widthOfTextAtSize(segment2, titleFontSize);
@@ -78,12 +83,30 @@ const print = async (result) => {
     const totalWidth = titleWidth1 + titleWidth2 + titleWidth3;
 
     const startX = width / 2 - totalWidth / 2;
-    const logoY = 750;         
+    const logoY = 750;
     const titleY = logoY + 50;
 
-    page.drawText(segment1, { x: startX, y: titleY, size: titleFontSize, font: bold, color: rgb(0, 0.6, 0) });
-    page.drawText(segment2, { x: startX + titleWidth1, y: titleY, size: titleFontSize, font: bold, color: rgb(0.95, 0.85, 0) });
-    page.drawText(segment3, { x: startX + titleWidth1 + titleWidth2, y: titleY, size: titleFontSize, font: bold, color: rgb(0.85, 0, 0) });
+    page.drawText(segment1, {
+      x: startX,
+      y: titleY,
+      size: titleFontSize,
+      font: bold,
+      color: rgb(0, 0.6, 0),
+    });
+    page.drawText(segment2, {
+      x: startX + titleWidth1,
+      y: titleY,
+      size: titleFontSize,
+      font: bold,
+      color: rgb(0.95, 0.85, 0),
+    });
+    page.drawText(segment3, {
+      x: startX + titleWidth1 + titleWidth2,
+      y: titleY,
+      size: titleFontSize,
+      font: bold,
+      color: rgb(0.85, 0, 0),
+    });
 
     // -----------------------------
     // LOGO
@@ -255,7 +278,7 @@ const print = async (result) => {
       ["Rent Days", r.Rent_Day],
       ["Total Payment", r.total_Payment + " birr"],
       ["Tax", r.Tax_Amount + " birr"],
-      ["Driver" , r.D_ID == null ? "No driver" : driver.driver.full_name ],
+      ["Driver", r.D_ID == null ? "No driver" : driver.driver.full_name],
       ["Status", r.Status],
       ["Confirmation Number", r.Confirmation_Number],
     ];
@@ -282,7 +305,6 @@ const print = async (result) => {
     a.href = URL.createObjectURL(blob);
     a.download = "Reservation_Details.pdf";
     a.click();
-
   } catch (err) {
     console.log("Printable ERROR →", err);
   }

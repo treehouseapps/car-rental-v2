@@ -3,24 +3,26 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 
 const DigitalID = () => {
   const { id } = useParams();
-  const navigate = useNavigate()
-   const [previews, setPreviews] = useState({
+  const navigate = useNavigate();
+  const [previews, setPreviews] = useState({
     digital_id: null,
   });
- const [form, setForm] = useState({
+  const [form, setForm] = useState({
     digital_id: null,
   });
 
-useEffect(()=>{
-  const fetchData = async ()=>{
-  const check =  await fetch(`http://localhost:3000/api/user/document/check/${id}`)
-  const checkComplete = await check.json()
-  if(checkComplete.doc === true){
-    navigate(`/myreservation/${id}`)
-  }
-  }
-  fetchData()
-},[])
+  useEffect(() => {
+    const fetchData = async () => {
+      const check = await fetch(
+        `https://car-rental-v2-sand.vercel.app/api/user/document/check/${id}`,
+      );
+      const checkComplete = await check.json();
+      if (checkComplete.doc === true) {
+        navigate(`/myreservation/${id}`);
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
@@ -31,35 +33,36 @@ useEffect(()=>{
         [name]: URL.createObjectURL(files[0]),
       }));
 
-      setForm((prev)=>({
+      setForm((prev) => ({
         ...prev,
-        [name] : files[0]
-      }))
-
+        [name]: files[0],
+      }));
     }
   };
 
-  const handleSubmit =async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData()
+    const formData = new FormData();
     formData.append("reservation_id", id);
-    formData.append("digital_id", form.digital_id)
+    formData.append("digital_id", form.digital_id);
 
     // console.log("Submitting documents...");
-    const response = await fetch(`http://localhost:3000/api/user/upload/document/${id}`, {
+    const response = await fetch(
+      `https://car-rental-v2-sand.vercel.app/api/user/upload/document/${id}`,
+      {
         method: "POST",
         body: formData,
-    })
+      },
+    );
     if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error)
-      }
-      const successData = await response.json()
-      // alert(successData.message)
-      // console.log(successData)
-      navigate("/")
-
+      const errorData = await response.json();
+      throw new Error(errorData.error);
+    }
+    const successData = await response.json();
+    // alert(successData.message)
+    // console.log(successData)
+    navigate("/");
   };
 
   const Preview = ({ src }) => {
@@ -93,7 +96,6 @@ useEffect(()=>{
       <div className="h-px bg-gray-200 my-6" />
 
       <div className="space-y-8">
-
         {/* Digital ID */}
         <div>
           <label className="block font-medium text-gray-800">
@@ -105,7 +107,7 @@ useEffect(()=>{
             name="digital_id"
             accept="image/*"
             required
-            onChange={(e)=> handleFileChange(e)}
+            onChange={(e) => handleFileChange(e)}
             className="mt-2 block w-full text-sm
               file:mr-4 file:py-2 file:px-4
               file:rounded-md file:border-0
@@ -115,7 +117,6 @@ useEffect(()=>{
 
           <Preview src={previews.digital_id} />
         </div>
-  
       </div>
 
       <div className="h-px bg-gray-200 my-8" />
@@ -125,22 +126,18 @@ useEffect(()=>{
           JPG, PNG, • Max 5MB per document
         </p>
         <div className="flex gap-4">
-         <Link
-        to={"/"}>
-        <button
-          className="bg-red-600 text-white px-8 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition"
-        >
-          Later
-        </button>
-        </Link>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-8 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition"
-        >
-          Submit Documents
-        </button>
-       
-      </div>
+          <Link to={"/"}>
+            <button className="bg-red-600 text-white px-8 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition">
+              Later
+            </button>
+          </Link>
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-8 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition"
+          >
+            Submit Documents
+          </button>
+        </div>
       </div>
     </form>
   );

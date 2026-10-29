@@ -11,7 +11,7 @@ const UpdateBooking = () => {
   const [selectedCar, setSelectedCar] = useState();
   const [userData, setUserData] = useState({});
   const [selected, setSelected] = useState();
-  const [driver, setDriver] = useState()
+  const [driver, setDriver] = useState();
   const [imageCount, setImageCount] = useState();
   const [index, setIndex] = useState(0);
   const [dateDiff, setDateDiff] = useState(0);
@@ -39,13 +39,13 @@ const UpdateBooking = () => {
       try {
         const token = localStorage.getItem("jwt-token");
         const responseVerify = await fetch(
-          "http://localhost:3000/api/user/verify",
+          "https://car-rental-v2-sand.vercel.app/api/user/verify",
           {
             method: "POST",
             headers: {
               "jwt-token": token,
             },
-          }
+          },
         );
 
         if (!responseVerify.ok) {
@@ -60,7 +60,7 @@ const UpdateBooking = () => {
         // console.log(resultVerify);
 
         const reservationResponse = await fetch(
-          `http://localhost:3000/api/reservation/single/${rid}`
+          `https://car-rental-v2-sand.vercel.app/api/reservation/single/${rid}`,
         );
         if (!reservationResponse.ok) {
           const errorData = await reservationResponse.json();
@@ -74,34 +74,42 @@ const UpdateBooking = () => {
         }
 
         const hasDriver = reservationResult[0].D_ID !== null;
-        setShowDriverLicense(!hasDriver); 
+        setShowDriverLicense(!hasDriver);
         const licensePath = reservationResult[0].Driver_License;
         if (reservationResult[0].D_ID === null && licensePath) {
           setShowDriverLicense(true);
           setSelectedFile(`http://localhost:3000${licensePath}`);
         }
 
-
         // console.log(reservationResult)
         // setReservedCar(reservationResult);
         setRentalDetails({
-          pickUpDate: new Date(reservationResult[0].Pickup_Date).toLocaleDateString("en-CA"),
-          returnDate: new Date(reservationResult[0].Return_Date).toLocaleDateString("en-CA"),
+          pickUpDate: new Date(
+            reservationResult[0].Pickup_Date,
+          ).toLocaleDateString("en-CA"),
+          returnDate: new Date(
+            reservationResult[0].Return_Date,
+          ).toLocaleDateString("en-CA"),
           rentDay: reservationResult[0].Rent_Day,
           totalPayment: reservationResult[0].total_Payment,
           vehicleDriver: reservationResult[0].driverDetail?.D_ID ?? "NoDriver",
           tax: reservationResult[0].Tax_Amount,
-          Payment: reservationResult[0].total_Payment - reservationResult[0].Tax_Amount
+          Payment:
+            reservationResult[0].total_Payment -
+            reservationResult[0].Tax_Amount,
         });
         setSelected({
-          from: new Date(reservationResult[0].Pickup_Date).toLocaleDateString("en-CA"),
-          to: new Date(reservationResult[0].Return_Date).toLocaleDateString("en-CA"),
+          from: new Date(reservationResult[0].Pickup_Date).toLocaleDateString(
+            "en-CA",
+          ),
+          to: new Date(reservationResult[0].Return_Date).toLocaleDateString(
+            "en-CA",
+          ),
         });
         // console.log(reservationResult);
 
-
         const response = await fetch(
-          `http://localhost:3000/api/vehicle/${reservationResult[0].V_ID}`
+          `https://car-rental-v2-sand.vercel.app/api/vehicle/${reservationResult[0].V_ID}`,
         );
         if (!response.ok) {
           const errorData = await response.json();
@@ -116,13 +124,15 @@ const UpdateBooking = () => {
 
         // console.log(result);
 
-        const driverResult = await fetch(`http://localhost:3000/api/driver/active`)
+        const driverResult = await fetch(
+          `https://car-rental-v2-sand.vercel.app/api/driver/active`,
+        );
         if (!driverResult.ok) {
-          console.log("there is no driver available right now.")
-          return
+          console.log("there is no driver available right now.");
+          return;
         }
 
-        setDriver(await driverResult.json())
+        setDriver(await driverResult.json());
       } catch (e) {
         throw new Error(e);
       }
@@ -131,7 +141,6 @@ const UpdateBooking = () => {
   }, []);
 
   const handleSubmit = async (e) => {
-
     // console.log(rentalDetails)
     e.preventDefault();
     try {
@@ -147,11 +156,11 @@ const UpdateBooking = () => {
         formData.append("driverLicensePhoto", driverLicensePhoto);
       }
       const response = await fetch(
-        `http://localhost:3000/api/reservation/update/${rid}`,
+        `https://car-rental-v2-sand.vercel.app/api/reservation/update/${rid}`,
         {
           method: "PUT",
           body: formData,
-        }
+        },
       );
       if (!response.ok) {
         const errorData = await response.json();
@@ -196,17 +205,17 @@ const UpdateBooking = () => {
       Payment: subTotal,
       tax: taxAmount,
       totalPayment: totalPayment,
-      vehicleDriver: prev.vehicleDriver
+      vehicleDriver: prev.vehicleDriver,
     }));
   };
 
   const deleteHandler = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/reservation/delete/${rid}`,
+        `https://car-rental-v2-sand.vercel.app/api/reservation/delete/${rid}`,
         {
           method: "DELETE",
-        }
+        },
       );
       if (!response.ok) {
         const errorData = await response.json();
@@ -335,27 +344,39 @@ const UpdateBooking = () => {
                       <td className="p-3 text-green-900 font-semibold">
                         Days of Rent
                       </td>
-                      <td className="p-3 text-xl">{rentalDetails.rentDay} day/s</td>
+                      <td className="p-3 text-xl">
+                        {rentalDetails.rentDay} day/s
+                      </td>
                     </tr>
                     <tr>
-                      <td className="p-3 text-green-900 font-semibold">Payment</td>
-                      <td className="p-3 text-xl">{rentalDetails.Payment} Birr</td>
+                      <td className="p-3 text-green-900 font-semibold">
+                        Payment
+                      </td>
+                      <td className="p-3 text-xl">
+                        {rentalDetails.Payment} Birr
+                      </td>
                     </tr>
                     {driverPrice > 0 && (
                       <tr>
-                        <td className="p-3 text-green-900 font-semibold">Driver</td>
+                        <td className="p-3 text-green-900 font-semibold">
+                          Driver
+                        </td>
                         <td className="p-3 text-xl">{driverPrice} Birr</td>
                       </tr>
                     )}
                     <tr>
-                      <td className="p-3 text-green-900 font-semibold">Tax (15%)</td>
+                      <td className="p-3 text-green-900 font-semibold">
+                        Tax (15%)
+                      </td>
                       <td className="p-3 text-xl">{rentalDetails.tax} Birr</td>
                     </tr>
                     <tr>
                       <td className="p-3 text-green-900 font-semibold">
                         Total Payment
                       </td>
-                      <td className="p-3 text-xl">{rentalDetails.totalPayment} Birr</td>
+                      <td className="p-3 text-xl">
+                        {rentalDetails.totalPayment} Birr
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -387,10 +408,13 @@ const UpdateBooking = () => {
                       setShowDriverLicense(true);
                     }
 
-                    const baseRent = selectedCar[0].Price_Per_Day * rentalDetails.rentDay;
+                    const baseRent =
+                      selectedCar[0].Price_Per_Day * rentalDetails.rentDay;
                     const subTotal = baseRent + driverFee;
                     const taxAmount = parseFloat((subTotal * 0.15).toFixed(2));
-                    const totalPayment = parseFloat((subTotal + taxAmount).toFixed(2));
+                    const totalPayment = parseFloat(
+                      (subTotal + taxAmount).toFixed(2),
+                    );
 
                     setRentalDetails((prev) => ({
                       ...prev,
@@ -402,10 +426,13 @@ const UpdateBooking = () => {
                   }}
                   value={rentalDetails.vehicleDriver}
                   name="driver"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-400 outline-none">
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-400 outline-none"
+                >
                   <option value="NoDriver">No Driver</option>
                   {driver?.map((drivers) => (
-                    <option key={drivers.D_ID} value={drivers.D_ID}>{drivers.full_name}</option>
+                    <option key={drivers.D_ID} value={drivers.D_ID}>
+                      {drivers.full_name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -436,7 +463,6 @@ const UpdateBooking = () => {
                   )}
                 </div>
               )}
-
             </div>
 
             <button

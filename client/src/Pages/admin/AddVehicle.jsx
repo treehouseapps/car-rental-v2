@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AddVehicle = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormdata] = useState({
     A_ID: null,
     vehicleName: "",
@@ -13,7 +13,7 @@ const AddVehicle = () => {
     seatCapacity: Number,
     fuelType: "",
   });
-  const [images, setImages] = useState()
+  const [images, setImages] = useState();
   const [plateError, setPlateError] = useState(null);
   useEffect(() => {
     const fetchAdmin = async () => {
@@ -21,31 +21,31 @@ const AddVehicle = () => {
         const token = localStorage.getItem("jwt-token");
         if (!token) {
           navigate("/admin/login");
-          return
+          return;
         }
         const responseVerify = await fetch(
-          "http://localhost:3000/api/admin/verify",
+          "https://car-rental-v2-sand.vercel.app/api/admin/verify",
           {
             method: "POST",
             headers: {
               "jwt-token": token,
             },
-          }
+          },
         );
 
         if (!responseVerify.ok) {
-          localStorage.removeItem("jwt-token")
+          localStorage.removeItem("jwt-token");
           navigate("/admin/login");
-          return
+          return;
         }
-        const data = await responseVerify.json()
+        const data = await responseVerify.json();
 
         if (data.user.type != "admin") {
           // localStorage.removeItem("jwt-token")
-          navigate(`/superadmin/manage-admins`)
+          navigate(`/superadmin/manage-admins`);
         }
 
-        setFormdata({ ...formData, A_ID: data.user.id })
+        setFormdata({ ...formData, A_ID: data.user.id });
       } catch (e) {
         throw new Error(e);
       }
@@ -55,42 +55,46 @@ const AddVehicle = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.plateNumber.startsWith("ET") && !formData.plateNumber.startsWith("et")) {
+    if (
+      !formData.plateNumber.startsWith("ET") &&
+      !formData.plateNumber.startsWith("et")
+    ) {
       setPlateError("Plate Number Must Start With ET- or et-");
       return;
     }
-    const form = new FormData()
+    const form = new FormData();
 
-    form.append("A_ID", parseInt(formData.A_ID))
-    form.append("brandName", formData.brandName)
-    form.append("fuelType", formData.fuelType)
-    form.append("modelYear", formData.modelYear)
-    form.append("plateNumber", formData.plateNumber)
-    form.append("pricePerDay", formData.pricePerDay)
-    form.append("seatCapacity", formData.seatCapacity)
-    form.append("vehicleName", formData.vehicleName)
+    form.append("A_ID", parseInt(formData.A_ID));
+    form.append("brandName", formData.brandName);
+    form.append("fuelType", formData.fuelType);
+    form.append("modelYear", formData.modelYear);
+    form.append("plateNumber", formData.plateNumber);
+    form.append("pricePerDay", formData.pricePerDay);
+    form.append("seatCapacity", formData.seatCapacity);
+    form.append("vehicleName", formData.vehicleName);
     for (let i = 0; i < images.length; i++) {
       form.append("images", images[i]);
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/admin/registervehicle", {
-        method: "POST",
-        body: form,
-      });
+      const response = await fetch(
+        "https://car-rental-v2-sand.vercel.app/api/admin/registervehicle",
+        {
+          method: "POST",
+          body: form,
+        },
+      );
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error)
+        const errorData = await response.json();
+        throw new Error(errorData.error);
       }
-      const successData = await response.json()
+      const successData = await response.json();
       // alert(successData.message)
       // console.log(successData)
-      navigate(`/admin`)
-
+      navigate(`/admin`);
     } catch (e) {
       // alert(e)
-      throw new Error(e)
-
+      throw new Error(e);
     }
   };
 
@@ -112,12 +116,13 @@ const AddVehicle = () => {
               accept="image/*"
               multiple
               max={6}
-              onChange={(e) => { setImages(e.target.files) }}
+              onChange={(e) => {
+                setImages(e.target.files);
+              }}
               placeholder="Add Vehicle Name"
               className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-400 outline-none"
               required
             />
-
           </div>
           <div>
             <label className="block text-gray-700 font-medium mb-1">
